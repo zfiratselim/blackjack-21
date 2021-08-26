@@ -13,7 +13,8 @@
         "nuke": "rimraf .cache dist"
     },
     "dependencies": {
-        "pixi.js": "^6.0.4"
+        "@pixi/graphics-smooth": "^0.0.13",
+        "pixi.js": "6.0.4"
     },
     "devDependencies": {
         "@types/pixi.js": "^5.0.0",
