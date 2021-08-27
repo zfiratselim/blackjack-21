@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
-import { cardSizes, cardsElementsPosiiton, numCoords } from "./config";
+import { cardSizes, cardsElementsPosiiton, cardElemsForNum } from "./config";
 import { Container } from "pixi.js";
 
 export default class Card {
@@ -12,7 +12,7 @@ export default class Card {
     private addReactange() {
         let rectangle = new Graphics();
         rectangle.beginFill(0xFFFFFF);
-        rectangle.lineStyle(0);
+        rectangle.lineStyle(1, 0x000000, .5);
         rectangle.drawRoundedRect(0, 0, cardSizes.width, cardSizes.height, 10);
         rectangle.endFill();
         return this.renderer.generateTexture(rectangle);
@@ -20,8 +20,8 @@ export default class Card {
 
     private addCardType(type: string) {
         const cardType = PIXI.Sprite.from(type);
-        cardType.width = 40;
-        cardType.height = 45;
+        cardType.width = 120;
+        cardType.height = 125;
         cardType.anchor.set(.5);
         return cardType;
     }
@@ -35,36 +35,35 @@ export default class Card {
         return { hat, mugsoft }
     }
 
-    private addCardNum(n: string, color: number) {
+    private addCardNum(n: string, color: number, type: string) {
         const numCon = new Container();
         numCon.width = cardSizes.width;
         numCon.height = cardSizes.height;
-        numCoords.forEach((e, i) => {
-            //@ts-ignore
-            const num = new PIXI.Text(n, { fill: color, fontFamily: "Arial", fontSize: 28, fontWeight: 400 });
+        //@ts-ignore
+        const num = new PIXI.Text(n, { fill: color, fontFamily: "Arial", fontSize: 36, fontWeight: 400 });
+        num.anchor.set(.5);
+        Object.assign(num, { x: 30, y: 30 });
 
+        const typeImg = PIXI.Sprite.from(type);
+        typeImg.anchor.set(.5);
+        typeImg.width = 25;
+        typeImg.height = 25;
+        Object.assign(typeImg, { x: 30, y: 60 })
 
-            num.anchor.set(.5);
-
-
-            if (i % 2 == 1) num.rotation = Math.PI;
-
-            Object.assign(num, e);
-            numCon.addChild(num);
-        });
+        numCon.addChild(num, typeImg);
         return numCon
     }
 
-    add(name: string, type: string) {
+    add(name: string, type: string, { x, y }: { x: number, y: number }) {
         const color = (type == "kupa" || type == "karo") ? 0xFF0000 : 0x000000;
         const card = new PIXI.Container();
         const bgTexture = this.addReactange();
-        card.position.set(100, 100);
+        card.position.set(x, y);
 
         const bg = PIXI.Sprite.from(bgTexture);
         bg.position.set(0, 0);
 
-        const cardNum = this.addCardNum(name, color);
+        const cardNum = this.addCardNum(name, color, type);
 
         card.addChild(bg, cardNum);
 
@@ -76,16 +75,13 @@ export default class Card {
             Object.assign(images.mugsoft, e.logo);
             card.addChild(images.hat, images.mugsoft)
         } else {
-            this.cElPos[name].forEach((e, i) => {
-                const el = this.addCardType(type);
-                el.position.set(e.x, e.y);
-                if (i % 2 == 1) el.rotation = Math.PI;
-                card.addChild(el);
-            })
+            const el = this.addCardType(type);
+            Object.assign(el, cardElemsForNum)
+            card.addChild(el);
         }
 
-        card.width = 200;
-        card.height = 320;
+        card.width = cardSizes.width;
+        card.height = cardSizes.height;
         return card
     }
 }
