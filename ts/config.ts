@@ -3,6 +3,13 @@ export const cardSizes = {
   height: 308
 }
 
+export const numCoords = [
+  { x: 20, y: 25 },
+  { x: 20, y: cardSizes.height - 25 },
+  { x: cardSizes.width - 20, y: 25 },
+  { x: cardSizes.width - 20, y: cardSizes.height - 25 }
+]
+
 export const cardsElementsPosiiton = {
   "1": [
     { x: cardSizes.width / 2, y: cardSizes.height / 2 }
@@ -81,30 +88,44 @@ export const cardsElementsPosiiton = {
   ],
   "J": {
     logo: {
-      width: 100,
-      height: 75,
-      x: cardSizes.width / 2-65,
-      y: cardSizes.height / 2 - 10
+      width: 92,
+      height: 69,
+      x: cardSizes.width / 2 - 12,
+      y: cardSizes.height / 2 + 40
     },
     hat: {
-      width: 160,
-      height: 82,
-      x: cardSizes.width / 2-70,
-      y: cardSizes.height / 2 - 75
+      width: 120,
+      height: 70,
+      x: cardSizes.width / 2 + 10,
+      y: cardSizes.height / 2 - 30
     }
   },
   "Q": {
     logo: {
-      width: 100,
-      height: 75,
-      x: cardSizes.width / 2-65,
-      y: cardSizes.height / 2 - 10
+      width: 92,
+      height: 69,
+      x: cardSizes.width / 2 - 12,
+      y: cardSizes.height / 2 + 40
     },
     hat: {
-      width: 160,
-      height: 82,
-      x: cardSizes.width / 2-70,
-      y: cardSizes.height / 2 - 75
+      width: 115,
+      height: 71,
+      x: cardSizes.width / 2,
+      y: cardSizes.height / 2 - 40
+    }
+  },
+  "K": {
+    logo: {
+      width: 92,
+      height: 69,
+      x: cardSizes.width / 2 - 12,
+      y: cardSizes.height / 2 + 40
+    },
+    hat: {
+      width: 110,
+      height: 89,
+      x: cardSizes.width / 2,
+      y: cardSizes.height / 2 - 50
     }
   }
 }
