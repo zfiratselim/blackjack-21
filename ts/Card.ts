@@ -6,8 +6,19 @@ import { Container } from "pixi.js";
 export default class Card {
     cElPos = cardsElementsPosiiton;
     private renderer;
-    constructor(renderer) {
+    private loader;
+    constructor(renderer, loader) {
         this.renderer = renderer
+        this.loader = loader;
+        this.loader
+            .add("mugSoftLogo", "images/mugsoft.png")
+            .add("Q", "images/queen.png")
+            .add("K", "images/king.png")
+            .add("J", "images/joker.png")
+            .add("sinek", "images/sinek.png")
+            .add("karo", "images/karo.png")
+            .add("maca", "images/maca.png")
+            .add("kupa", "images/kupa.png")
     }
     private addReactange() {
         let rectangle = new Graphics();
