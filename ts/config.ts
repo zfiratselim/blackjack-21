@@ -1,10 +1,22 @@
+
+
+export const chipCoords: { x: number, y: number }[] = [
+  { x: 100, y: 90 },
+  { x: 250, y: 90 },
+  { x: 400, y: 90 },
+  { x: 550, y: 90 },
+  { x: 700, y: 90 },
+  { x: 850, y: 90 },
+];
+
+
 export const cardSizes = {
   width: 170,
   height: 220
 }
-export const cardElemsForNum={
-  x:cardSizes.width/2,
-  y:cardSizes.height-90
+export const cardElemsForNum = {
+  x: cardSizes.width / 2,
+  y: cardSizes.height - 90
 }
 export const cardsElementsPosiiton = {
   "J": {
