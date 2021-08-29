@@ -41,7 +41,7 @@ export default class Card {
         numCon.width = cardSizes.width;
         numCon.height = cardSizes.height;
         //@ts-ignore
-        const num = new PIXI.Text(n, { fill: color, fontFamily: "Arial", fontSize: 36, fontWeight: 400 });
+        const num = new PIXI.Text(n == 1 ? "A" : n, { fill: color, fontFamily: "Arial", fontSize: 36, fontWeight: 400 });
         num.anchor.set(.5);
         Object.assign(num, { x: 30, y: 30 });
 
