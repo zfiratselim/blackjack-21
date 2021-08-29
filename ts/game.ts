@@ -3,14 +3,17 @@ import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import Card from "./card";
 import Chip from "./chip";
 import Tween from "tween.ts";
-import { cardSizes, chipCoords } from "./config";
+import { W, H, cardSizes, chipCoords, totalPuanCoords } from "./config";
 import { ChipIntFace } from "./interface";
-const W = 1495;
-const H = 840;
+
 interface Coords {
   x: number,
   y: number
 }
+interface CardIntFace extends PIXI.Container {
+  puan: number
+}
+
 interface Button extends PIXI.Container {
   fn: () => void
 }
@@ -57,7 +60,6 @@ class Button {
 
 
 
-
 export default class BlackJack extends PIXI.Application {
   Card = new Card(this.renderer);
   Chip = new Chip();
@@ -65,10 +67,11 @@ export default class BlackJack extends PIXI.Application {
   chipAreaCon: PIXI.Container;
   chipPrices = [10, 20, 50, 100, 200, 500, 1000]
 
-  kasa: PIXI.Container[] = [];
-  player: PIXI.Container[] = [];
+  kasa: CardIntFace[] = [];
+  player: CardIntFace[] = [];
   bahisSpr: PIXI.Text;
   totalBahis: number = 0;
+  totalPuanText: PIXI.Text[] = [];
   click: boolean = false;
   constructor() {
     super({
@@ -90,6 +93,42 @@ export default class BlackJack extends PIXI.Application {
       .add("button", "images/btn1.png")
       .add("kurdele", "images/kurdele.png")
       .load(() => this.startGame())
+  }
+  private addCircle(size) {
+    let circle = new Graphics();
+    circle.beginFill(0xFFFFFF);
+    circle.drawCircle(0, 0, size);
+    circle.endFill();
+    return circle
+  }
+  addTotalPuans() {
+    totalPuanCoords.forEach((e, i) => {
+      const Container = new PIXI.Container();
+      const circle = this.addCircle(40);
+      const puan = new PIXI.Text(0 + "", { fontSize: 32 });
+
+      circle.tint = 0x000000;
+      circle.alpha = .3;
+      circle.position.set(40, 40);
+
+      puan.anchor.set(.5);
+      puan.position.set(40, 40);
+
+      Container.position.set(e.x, e.y);
+      Container.addChild(circle, puan);
+      this.stage.addChild(Container);
+      this.totalPuanText.push(puan);
+    })
+  }
+  changeTotalPuans() {
+    let kasaTotalPuan: number = 0;
+    let playerTotalPuan: number = 0;
+
+    this.kasa.forEach(e => kasaTotalPuan += e.puan)
+    this.player.forEach(e => playerTotalPuan += e.puan)
+
+    this.totalPuanText[0].text = kasaTotalPuan + ""
+    this.totalPuanText[1].text = playerTotalPuan + ""
   }
   addInteractivityForButton(button: Button, fn: () => void) {
     button.interactive = true;
@@ -161,12 +200,15 @@ export default class BlackJack extends PIXI.Application {
     return targetCoords
   }
   actionCard(n: string, type: string, owner: Owner, fn?: () => void) {
+    const number = (n == "J" || n == "Q" || n == "K") ? 10 : n == "A" ? 11 : Number(n);
     const coord = { x: 1400, y: -250 }
-    const card = this.Card.add(n, type, coord);
+    const card = this.Card.add(n, type, coord) as CardIntFace;
     card.scale.set(.8)
+    card.puan = number;
     this.stage.addChild(card);
-    const targetCoords = this.calculateTargetCoord(card, owner)
-    this.action(card, targetCoords, fn)
+    const targetCoords = this.calculateTargetCoord(card, owner);
+    this.action(card, targetCoords, fn);
+    this.changeTotalPuans();
   }
   updateBahis() {
     this.bahisSpr.text = this.totalBahis + ""
@@ -221,7 +263,6 @@ export default class BlackJack extends PIXI.Application {
     chipAreaBG.height = H / 3;
 
     this.chipAreaCon.addChild(chipAreaBG);
-
     this.chipAreaCon.position.set(0, H / 3 * 2);
 
     chipCoords.forEach((e, i) => {
@@ -230,19 +271,28 @@ export default class BlackJack extends PIXI.Application {
     this.stage.addChild(this.chipAreaCon);
   }
 
+  sendSocketCardRequest() {
+    this.recieveCardfromSocket(Math.floor(Math.random() * 9) + 1 + "", "sinek", Owner.player)
+  }
+  recieveCardfromSocket(num: string, type: string, owner: Owner) {
+    this.changeTotalPuans();
+    this.actionCard(num, type, owner);
+  }
   addButtons() {
     const gameButtons = () => {
       const hitFunc = () => {
-        this.actionCard("5", "karo", Owner.player)
+        this.sendSocketCardRequest()
       }
+
       const standFunc = () => {
 
       }
+
       this.actionCard("5", "karo", Owner.kasa, () => {
         this.actionCard("5", "karo", Owner.player, () => {
           this.actionCard("8", "karo", Owner.kasa, () => {
-            const hit = this.Button.add(this.stage, 0x3399ff, "Hit", { x: W / 3, y: H / 2 - 100 })
-            const stand = this.Button.add(this.stage, 0x3399ff, "Stand", { x: W / 3 * 2, y: H / 2 - 100 })
+            const hit = this.Button.add(this.stage, 0x3399ff, "Hit", { x: W / 4, y: H / 2 - 100 })
+            const stand = this.Button.add(this.stage, 0x3399ff, "Stand", { x: W / 4 * 3, y: H / 2 - 100 })
             this.addInteractivityForButton(hit, hitFunc);
             this.addInteractivityForButton(stand, standFunc);
           })
@@ -252,9 +302,10 @@ export default class BlackJack extends PIXI.Application {
 
     }
     const dealButton = () => {
-      const Button = this.Button.add(this.stage, 0x3399ff, "Deal", { x: W / 3 * 2, y: H / 2 - 100 })
+      const Button = this.Button.add(this.stage, 0x3399ff, "Deal", { x: W / 4 * 3, y: H / 2 - 100 })
       const destroyChipArea = () => {
         if (this.totalBahis > 0) {
+          this.addTotalPuans();
           this.chipAreaCon.destroy();
           Button.destroy();
           gameButtons();
