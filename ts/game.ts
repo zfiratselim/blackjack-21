@@ -16,8 +16,11 @@ export default class BlackJack extends PIXI.Application {
   Chip = new Chip();
   chipPrices = [10, 20, 50, 100, 200, 500, 1000]
 
+  kasa: PIXI.Container[] = [];
+  player: PIXI.Container[] = [];
   bahisSpr: PIXI.Text;
   totalBahis: number = 0;
+  click: boolean = false;
   constructor() {
     super({
       view: <HTMLCanvasElement>document.querySelector("#canvas"),
@@ -43,16 +46,36 @@ export default class BlackJack extends PIXI.Application {
       .repeat(0)
       .easing(Tween.Easing.Cubic.In)
       .start()
-      .onComplete(() => fn && fn())
+      .onComplete(() => {
+        fn && fn();
+        this.click = false;
+      })
   }
   ticcker() {
     this.ticker.add(delta => {
       Tween.update(this.ticker.lastTime)
     })
   }
-  actionCard(n: string, type: string, coord: Coords, targetCoords: Coords) {
+  calculateTargetCoord(card: PIXI.Container, owner: "kasa" | "player") {
+    const center = { x: W / 2 - cardSizes.width / 2, y: 60 }
+    let targetCoords: { x: number, y: number };
+    const cards = owner == "kasa" ? this.kasa : this.player;
+    if (cards.length == 0) targetCoords = center;
+    cards.forEach((e, i) => {
+      this.action(e, { x: e.x - 60, y: e.y })
+      if (i == cards.length - 1) {
+        targetCoords = { x: e.x , y: 60 + Math.floor(Math.random() * 6 - 2) }
+      }
+    })
+
+    cards.push(card);
+    return targetCoords
+  }
+  actionCard(n: string, type: string, coord: Coords, owner: "kasa" | "player") {
     const card = this.Card.add(n, type, coord);
+    card.scale.set(.8)
     this.stage.addChild(card);
+    const targetCoords = this.calculateTargetCoord(card, owner)
     this.action(card, targetCoords)
   }
   updateBahis() {
@@ -61,7 +84,7 @@ export default class BlackJack extends PIXI.Application {
   addBahis() {
     const bahis = new PIXI.Text(this.totalBahis + "", { fontFamily: "Arial", fontSize: 36 });
     bahis.anchor.set(.5);
-    bahis.position.set(W / 2 + 60, H / 2 + 90);
+    bahis.position.set(W / 2 + 60, H / 2);
     this.stage.addChild(bahis);
     this.bahisSpr = bahis;
   }
@@ -76,6 +99,8 @@ export default class BlackJack extends PIXI.Application {
       chip.parentName = "chipAreaCon";
       chipAreaCon.addChild(chip);
       chip.on("pointerdown", el => {
+        if (this.click) return
+        this.click = true;
         addChiponCon(e, i);
         if (chip.parentName == "stage") {
           const fn = () => {
@@ -90,7 +115,7 @@ export default class BlackJack extends PIXI.Application {
         else if (chip.parentName == "chipAreaCon") {
           chip.parent.removeChild(chip);
           chip.position.set(chip.position.x + 0, chip.position.y + H / 3 * 2);
-          this.action(chip, { x: W / 2, y: H / 2 - 60 });
+          this.action(chip, { x: W / 2, y: H / 2 - 150 });
           this.totalBahis += this.chipPrices[i];
           chip.parentName = "stage";
           this.stage.addChild(chip);
@@ -114,13 +139,12 @@ export default class BlackJack extends PIXI.Application {
     })
     this.stage.addChild(chipAreaCon);
   }
-
   startGame() {
     this.ticcker();
-    this.actionCard("10", "maca", { x: 1400, y: -250 }, { x: W / 2 - 120 - cardSizes.width / 2, y: 100 })
-    this.actionCard("8", "karo", { x: 1400, y: -250 }, { x: W / 2 - 40 - cardSizes.width / 2, y: 108 })
-    this.actionCard("K", "kupa", { x: 1400, y: -250 }, { x: W / 2 + 40 - cardSizes.width / 2, y: 100 })
-    this.actionCard("4", "karo", { x: 1400, y: -250 }, { x: W / 2 + 120 - cardSizes.width / 2, y: 104 })
+    this.actionCard("1", "maca", { x: 1400, y: -250 }, "kasa")
+    setTimeout(() => {
+      this.actionCard("1", "karo", { x: 1400, y: -250 }, "kasa")
+    }, 1000);
     this.addBahis();
     this.createChipArea();
   }
