@@ -1,6 +1,18 @@
 export const W = 1495;
 export const H = 840;
 
+export const cardSizes = {
+  width: 170,
+  height: 220
+}
+
+export const kurdeleCoords = {
+  center: { x: W / 2 - cardSizes.width / 2, y: H / 2 - 40 },
+  dealer: { x: W / 2 - cardSizes.width / 2, y: 120 },
+  player: { x: W / 2 - cardSizes.width / 2, y: H - 240 }
+}
+
+
 export const chipCoords: { x: number, y: number }[] = [
   { x: 100, y: 90 },
   { x: 250, y: 90 },
@@ -9,10 +21,7 @@ export const chipCoords: { x: number, y: number }[] = [
   { x: 700, y: 90 },
   { x: 850, y: 90 },
 ];
-export const cardSizes = {
-  width: 170,
-  height: 220
-}
+
 export const totalPuanCoords = [
   { x: W - 500, y: 60 + cardSizes.height * .8 - 80 },
   { x: W - 500, y: H - 300 }

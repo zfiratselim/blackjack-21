@@ -2,6 +2,8 @@ import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import { cardSizes, cardsElementsPosiiton, cardElemsForNum } from "./config";
 import { Container } from "pixi.js";
+import { CardIntFace } from "./interface";
+
 
 export default class Card {
     cElPos = cardsElementsPosiiton;
@@ -55,15 +57,18 @@ export default class Card {
         return numCon
     }
 
-    add(name: string, type: string, { x, y }: { x: number, y: number }) {
+    add(name: string, puan: number, type: string, { x, y }: { x: number, y: number }) {
         const color = (type == "kupa" || type == "karo") ? 0xFF0000 : 0x000000;
-        const card = new PIXI.Container();
+        const card = new PIXI.Container() as CardIntFace;
         const bgTexture = this.addReactange();
         card.position.set(x, y);
 
+        card.puan = puan;
+        card.name = name;
+        card.type = type;
+
         const bg = PIXI.Sprite.from(bgTexture);
         bg.position.set(0, 0);
-        (name == "1") ? name = "A" : ""
         const cardNum = this.addCardNum(name, color, type);
 
         card.addChild(bg, cardNum);
@@ -72,7 +77,6 @@ export default class Card {
             const e = this.cElPos[name];
             const images = this.addRoyalCardImages(name, color);
             Object.assign(images.hat, e.hat);
-            console.log(images.mugsoft, e.logo)
             Object.assign(images.mugsoft, e.logo);
             card.addChild(images.hat, images.mugsoft)
         } else {
