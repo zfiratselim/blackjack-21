@@ -1,16 +1,21 @@
 import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
-import { cardSizes, cardsElementsPosiiton, cardElemsForNum } from "./config";
+import { cardSizes, cardsElementsPosiiton } from "./config";
 import { Container } from "pixi.js";
 import { CardIntFace } from "./interface";
 
 
 export default class Card {
+    cardScale: number = 1;
     cElPos = cardsElementsPosiiton;
+    cardElemsForNum = {
+        x: cardSizes.width / 2,
+        y: cardSizes.height - 90
+    }
     private renderer;
-    constructor(renderer) {
+    constructor(cardScale, renderer) {
         this.renderer = renderer
-
+        this.cardScale = cardScale;
     }
     private addReactange() {
         let rectangle = new Graphics();
@@ -81,12 +86,13 @@ export default class Card {
             card.addChild(images.hat, images.mugsoft)
         } else {
             const el = this.addCardType(type);
-            Object.assign(el, cardElemsForNum)
+            Object.assign(el, this.cardElemsForNum)
             card.addChild(el);
         }
 
         card.width = cardSizes.width;
         card.height = cardSizes.height;
+        card.scale.set(this.cardScale)
         return card
     }
 }

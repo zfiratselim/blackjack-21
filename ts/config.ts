@@ -1,3 +1,5 @@
+import { Coords, CardConCoords } from "./interface";
+
 export const W = 1495;
 export const H = 840;
 
@@ -6,20 +8,33 @@ export const cardSizes = {
   height: 220
 }
 
+export const cardConSizesForTable = {
+  width: 100,
+  height: 125
+}
+
+export const cardScale: number = cardConSizesForTable.width / cardSizes.width;
+
+export const cardConCoords: CardConCoords[] = [
+  { coord: { x: 360, y: 330 }, rot: .8 },
+  { coord: { x: 500, y: 460 }, rot: .4 },
+  { coord: { x: (W - cardSizes.width / 2) / 2, y: 520 }, rot: 0 },
+  { coord: { x: W - cardSizes.width / 2 - 500, y: 500 }, rot: -.4 },
+  { coord: { x: W - cardSizes.width / 2 - 350, y: 400 }, rot: -.8 }
+]
 export const kurdeleCoords = {
   center: { x: W / 2 - cardSizes.width / 2, y: H / 2 - 40 },
   dealer: { x: W / 2 - cardSizes.width / 2, y: 120 },
   player: { x: W / 2 - cardSizes.width / 2, y: H - 240 }
 }
 
-
 export const chipCoords: { x: number, y: number }[] = [
-  { x: 100, y: 90 },
-  { x: 250, y: 90 },
-  { x: 400, y: 90 },
-  { x: 550, y: 90 },
-  { x: 700, y: 90 },
-  { x: 850, y: 90 },
+  { x: 100, y: H / 10 - 60 },
+  { x: 250, y: H / 10 - 60 },
+  { x: 400, y: H / 10 - 60 },
+  { x: 550, y: H / 10 - 60 },
+  { x: 700, y: H / 10 - 60 },
+  { x: 850, y: H / 10 - 60 },
 ];
 
 export const totalPuanCoords = [
@@ -27,10 +42,6 @@ export const totalPuanCoords = [
   { x: W - 500, y: H - 300 }
 ]
 
-export const cardElemsForNum = {
-  x: cardSizes.width / 2,
-  y: cardSizes.height - 90
-}
 export const cardsElementsPosiiton = {
   "J": {
     logo: {

@@ -5,6 +5,10 @@ export interface Coords {
     x: number,
     y: number
 }
+export interface CardConCoords{
+    coord:Coords,
+    rot:number
+}
 export interface CardIntFace extends PIXI.Container {
     puan: number,
     name: string,
