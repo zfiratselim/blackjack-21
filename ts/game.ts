@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import Chip from "./chip";
 import CardLayer from "./cardLayer";
-import { W, H, totalPuanCoords, cardConCoords, cardConSizesForTable} from "./config";
+import { W, H, totalPuanCoords, cardConCoords, cardConSizesForTable } from "./config";
 import { Owner } from "./interface";
 
 
@@ -21,7 +21,7 @@ class Table {
   }
   private addCardCons(BGCon: PIXI.Container) {
     cardConCoords.forEach(e => {
-      const cardConReact = this.addReactange(e.rot);
+      const cardConReact = this.addReactange(e.rotation);
       cardConReact.position.set(e.coord.x, e.coord.y);
       BGCon.addChild(cardConReact)
     })
@@ -64,37 +64,13 @@ export default class BlackJack extends PIXI.Application {
       .add("chip", "images/chip.png")
       .add("button", "images/btn1.png")
       .add("bjTable", "images/bj_table.png")
+      .add("cardAltlik","images/card_altlik.png")
+      .add("cardUstluk","images/card_ustluk.png")
       .load(() => this.startGame())
-  }
-  private addCircle(size) {
-    let circle = new Graphics();
-    circle.beginFill(0xFFFFFF);
-    circle.drawCircle(0, 0, size);
-    circle.endFill();
-    return circle
-  }
-  addTotalPuans() {
-    totalPuanCoords.forEach((e, i) => {
-      const Container = new PIXI.Container();
-      const circle = this.addCircle(40);
-      const puan = new PIXI.Text(0 + "", { fontSize: 32 });
-
-      circle.tint = 0x000000;
-      circle.alpha = .3;
-      circle.position.set(40, 40);
-
-      puan.anchor.set(.5);
-      puan.position.set(40, 40);
-
-      Container.position.set(e.x, e.y);
-      Container.addChild(circle, puan);
-      this.stage.addChild(Container);
-      this.totalPuanText.push(puan);
-    })
   }
 
   sendSocketCardRequest() {
-    this.recieveCardfromSocket(Math.floor(Math.random() * 9) + 2 + "", "sinek", Owner.player)
+    this.recieveCardfromSocket(Math.floor(Math.random() * 9) + 2 + "", "sinek", Owner.player1)
   }
   sendtoSocketStandRequest() {
     alert("Stand")
@@ -110,6 +86,12 @@ export default class BlackJack extends PIXI.Application {
   startGame() {
     this.Table.add();
     this.ticcker();
+    this.CardLayer.addLayers();
+    this.CardLayer.actionCard("5", "karo", Owner.player1);
+    this.CardLayer.actionCard("5", "karo", Owner.player2);
+    this.CardLayer.actionCard("5", "karo", Owner.player3);
+    this.CardLayer.actionCard("5", "karo", Owner.player4);
+    this.CardLayer.actionCard("5", "karo", Owner.player5);
   }
 }
 (window as any).context = new BlackJack();

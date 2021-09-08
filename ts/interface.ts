@@ -5,9 +5,9 @@ export interface Coords {
     x: number,
     y: number
 }
-export interface CardConCoords{
-    coord:Coords,
-    rot:number
+export interface CardConCoords {
+    coord: Coords,
+    rotation: number
 }
 export interface CardIntFace extends PIXI.Container {
     puan: number,
@@ -19,7 +19,11 @@ export interface ButtonIntFace extends PIXI.Container {
     fn: () => void
 }
 export enum Owner {
-    player,
+    player1,
+    player2,
+    player3,
+    player4,
+    player5,
     kasa
 }
 export enum CardNum {

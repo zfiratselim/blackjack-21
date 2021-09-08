@@ -48,15 +48,15 @@ export default class Card {
         numCon.width = cardSizes.width;
         numCon.height = cardSizes.height;
         //@ts-ignore
-        const num = new PIXI.Text(n, { fill: color, fontFamily: "Arial", fontSize: 36, fontWeight: 400 });
+        const num = new PIXI.Text(n, { fill: color, fontFamily: "Arial", fontSize: 55, fontWeight: 400 });
         num.anchor.set(.5);
-        Object.assign(num, { x: 30, y: 30 });
+        Object.assign(num, { x: 30, y: 35 });
 
         const typeImg = PIXI.Sprite.from(type);
         typeImg.anchor.set(.5);
-        typeImg.width = 25;
-        typeImg.height = 25;
-        Object.assign(typeImg, { x: 30, y: 60 })
+        typeImg.width = 30;
+        typeImg.height = 30;
+        Object.assign(typeImg, { x: 30, y: 75 })
 
         numCon.addChild(num, typeImg);
         return numCon
@@ -90,9 +90,9 @@ export default class Card {
             card.addChild(el);
         }
 
-        card.width = cardSizes.width;
-        card.height = cardSizes.height;
-        card.scale.set(this.cardScale)
+        card.width = cardSizes.width*this.cardScale;
+        card.height = cardSizes.height*this.cardScale;
+        //card.scale.set(this.cardScale)
         return card
     }
 }

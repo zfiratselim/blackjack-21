@@ -10,17 +10,17 @@ export const cardSizes = {
 
 export const cardConSizesForTable = {
   width: 100,
-  height: 125
+  height: 130
 }
 
 export const cardScale: number = cardConSizesForTable.width / cardSizes.width;
 
 export const cardConCoords: CardConCoords[] = [
-  { coord: { x: 360, y: 330 }, rot: .8 },
-  { coord: { x: 500, y: 460 }, rot: .4 },
-  { coord: { x: (W - cardSizes.width / 2) / 2, y: 520 }, rot: 0 },
-  { coord: { x: W - cardSizes.width / 2 - 500, y: 500 }, rot: -.4 },
-  { coord: { x: W - cardSizes.width / 2 - 350, y: 400 }, rot: -.8 }
+  { coord: { x: 360, y: 330 }, rotation: .8 },
+  { coord: { x: 500, y: 460 }, rotation: .4 },
+  { coord: { x: (W - cardSizes.width / 2) / 2, y: 520 }, rotation: 0 },
+  { coord: { x: W - cardSizes.width / 2 - 500, y: 500 }, rotation: -.4 },
+  { coord: { x: W - cardSizes.width / 2 - 350, y: 400 }, rotation: -.8 }
 ]
 export const kurdeleCoords = {
   center: { x: W / 2 - cardSizes.width / 2, y: H / 2 - 40 },
