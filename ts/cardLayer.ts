@@ -2,85 +2,103 @@ import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import Tween from "tween.ts";
 import Card from "./card";
-import { W, H, cardSizes, cardConCoords, cardScale } from "./config";
-import { Coords, ChipIntFace, CardIntFace, Owner, CardConCoords } from "./interface";
+import { cardConCoords, cardScale, dealerCordandRot } from "./config";
+import { CardIntFace, Owner, CardConCoords, Coord } from "./interface";
 
 export default class CardLayer {
-    private renderer;
-    private stage;
-    private Card;
+  private renderer;
+  private stage;
+  private Card;
 
-    private lower = new PIXI.Container();
-    private middle = new PIXI.Container();
-    private upper = new PIXI.Container();
+  private lower = new PIXI.Container();
+  middle = new PIXI.Container();
+  private upper = new PIXI.Container();
 
-    constructor(stage, renderer) {
-        this.stage = stage;
-        this.renderer = renderer;
-        this.Card = new Card(cardScale, this.renderer);
+  private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []]]
+  constructor(stage, renderer) {
+    this.stage = stage;
+    this.renderer = renderer;
+    this.Card = new Card(cardScale, this.renderer);
+  }
+  private addCircle(size) {
+    let circle = new Graphics();
+    circle.beginFill(0xFFFFFF);
+    circle.drawCircle(0, 0, size);
+    circle.endFill();
+    return circle
+  }
+  addTotalPuans() {
+    totalPuanCoords.forEach((e, i) => {
+      const Container = new PIXI.Container();
+      const circle = this.addCircle(40);
+      const puan = new PIXI.Text(0 + "", { fontSize: 32 });
+
+      circle.tint = 0x000000;
+      circle.alpha = .3;
+      circle.position.set(40, 40);
+
+      puan.anchor.set(.5);
+      puan.position.set(40, 40);
+
+      Container.position.set(e.x, e.y);
+      Container.addChild(circle, puan);
+      this.stage.addChild(Container);
+      this.totalPuanText.push(puan);
+    })
+  }
+
+  action(Elem: PIXI.Container, targetCoord: Coord, rotation?: number, fn?: () => void) {
+    return new Tween.Tween(Elem)
+      .to({ x: targetCoord.x, y: targetCoord.y, rotation }, 1000)
+      .easing(Tween.Easing.Cubic.In)
+      .start()
+      .onComplete(() => {
+        Elem.scale.set(1);
+        fn && fn();
+      })
+  }
+
+  addLayers() {
+    this.stage.addChild(this.lower, this.middle, this.upper);
+    this.addCardBoxAltUst("cardAltlik", this.lower);
+    this.addCardBoxAltUst("cardUstluk", this.upper);
+  }
+
+  addCardBoxAltUst(imgName: "cardAltlik" | "cardUstluk", parent) {
+    const cardAltlik = PIXI.Sprite.from(imgName);
+    cardAltlik.width = 100;
+    cardAltlik.height = imgName == "cardAltlik" ? 100 : 200;
+    cardAltlik.rotation = dealerCordandRot.rotation;
+    cardAltlik.anchor.set(0, 1)
+    cardAltlik.position.set(dealerCordandRot.coord.x, dealerCordandRot.coord.y);
+    parent.addChild(cardAltlik);
+  }
+
+  actionCard(n: string, type: string, owner: Owner, coordIndex: number, fn?: () => void) {
+    const number = (n == "J" || n == "Q" || n == "K") ? 10 : n == "A" ? 11 : Number(n);
+    const gameCardArr = this.gameCards[owner][coordIndex]
+    const coord = dealerCordandRot.coord;
+    coord.y += 4;
+    const card: CardIntFace = this.Card.add(n, number, type, coord);
+    const targetInfo = cardConCoords[owner];
+    card.rotation = -dealerCordandRot.rotation - Math.PI / 2;
+    card.scale.set(.8);
+    this.middle.addChild(card);
+    if (gameCardArr.length < 4) {
+      gameCardArr.forEach(e => {
+        this.action(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY });
+      })
+      this.action(card, targetInfo.coords[coordIndex], targetInfo.rotation, fn);
     }
-    private addCircle(size) {
-        let circle = new Graphics();
-        circle.beginFill(0xFFFFFF);
-        circle.drawCircle(0, 0, size);
-        circle.endFill();
-        return circle
-    }
-    addTotalPuans() {
-        totalPuanCoords.forEach((e, i) => {
-            const Container = new PIXI.Container();
-            const circle = this.addCircle(40);
-            const puan = new PIXI.Text(0 + "", { fontSize: 32 });
-
-            circle.tint = 0x000000;
-            circle.alpha = .3;
-            circle.position.set(40, 40);
-
-            puan.anchor.set(.5);
-            puan.position.set(40, 40);
-
-            Container.position.set(e.x, e.y);
-            Container.addChild(circle, puan);
-            this.stage.addChild(Container);
-            this.totalPuanText.push(puan);
-        })
+    else {
+      const target = gameCardArr[gameCardArr.length - 4];
+      this.action(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, targetInfo.rotation, fn);
     }
 
-    action(Elem: PIXI.Container | ChipIntFace, cardConCoord: CardConCoords, fn?: () => void) {
-        return new Tween.Tween(Elem)
-            .to({ x: cardConCoord.coord.x, y: cardConCoord.coord.y, rotation: cardConCoord.rotation }, 1000)
-            .repeat(0)
-            .easing(Tween.Easing.Cubic.In)
-            .start()
-            .onComplete(() => {
-                fn && fn();
-            })
-    }
+    gameCardArr.push(card);
+  }
 
-    addLayers() {
-        this.stage.addChild(this.lower, this.middle, this.upper);
-        this.addCardBoxAltUst("cardAltlik", this.lower);
-        this.addCardBoxAltUst("cardUstluk", this.upper);
-    }
-
-    addCardBoxAltUst(imgName: "cardAltlik" | "cardUstluk", parent) {
-        const cardAltlik = PIXI.Sprite.from(imgName);
-        cardAltlik.width = 100;
-        cardAltlik.height = imgName == "cardAltlik" ? 100 : 200;
-        cardAltlik.rotation = .8;
-        cardAltlik.anchor.set(0, 1)
-        cardAltlik.position.set(W - 300, 300);
-        parent.addChild(cardAltlik);
-    }
-
-    actionCard(n: string, type: string, owner: Owner, fn?: () => void) {
-        const number = (n == "J" || n == "Q" || n == "K") ? 10 : n == "A" ? 11 : Number(n);
-        const coord = { x: 1400, y: -250 }
-        const card: CardIntFace = this.Card.add(n, number, type, coord);
-        this.middle.addChild(card);
-        this.action(card, cardConCoords[owner], fn);
-    }
-    update(lastTime: number) {
-        Tween.update(lastTime);
-    }
+  update(lastTime: number) {
+    Tween.update(lastTime);
+  }
 }

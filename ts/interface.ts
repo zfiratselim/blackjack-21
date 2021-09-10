@@ -1,12 +1,16 @@
 import * as PIXI from "pixi.js";
 
 
-export interface Coords {
+export interface Coord {
     x: number,
     y: number
 }
 export interface CardConCoords {
-    coord: Coords,
+    coords: Coord[],
+    raiseX: number,
+    raiseY: number,
+    newPerX: number,
+    newPerY: number,
     rotation: number
 }
 export interface CardIntFace extends PIXI.Container {

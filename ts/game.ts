@@ -22,7 +22,7 @@ class Table {
   private addCardCons(BGCon: PIXI.Container) {
     cardConCoords.forEach(e => {
       const cardConReact = this.addReactange(e.rotation);
-      cardConReact.position.set(e.coord.x, e.coord.y);
+      cardConReact.position.set(e.coords[0].x, e.coords[0].y);
       BGCon.addChild(cardConReact)
     })
   }
@@ -45,13 +45,14 @@ export default class BlackJack extends PIXI.Application {
   Table = new Table(this.stage);
   CardLayer = new CardLayer(this.stage, this.renderer);
   totalPuanText: PIXI.Text[] = [];
-  constructor() {
+  constructor(s) {
     super({
       view: <HTMLCanvasElement>document.querySelector("#canvas"),
-      width: W,
-      height: H,
+      width: W * s,
+      height: H * s,
       backgroundColor: 0x53FF15
     })
+    this.stage.scale.set(s);
     this.loader
       .add("mugSoftLogo", "images/mugsoft.png")
       .add("Q", "images/queen.png")
@@ -61,11 +62,12 @@ export default class BlackJack extends PIXI.Application {
       .add("karo", "images/karo.png")
       .add("maca", "images/maca.png")
       .add("kupa", "images/kupa.png")
+      .add("arkataraf", "images/arkataraf.png")
       .add("chip", "images/chip.png")
       .add("button", "images/btn1.png")
       .add("bjTable", "images/bj_table.png")
-      .add("cardAltlik","images/card_altlik.png")
-      .add("cardUstluk","images/card_ustluk.png")
+      .add("cardAltlik", "images/card_altlik.png")
+      .add("cardUstluk", "images/card_ustluk.png")
       .load(() => this.startGame())
   }
 
@@ -76,7 +78,7 @@ export default class BlackJack extends PIXI.Application {
     alert("Stand")
   }
   recieveCardfromSocket(num: string, type: string, owner: Owner) {
-    this.CardLayer.actionCard(num, type, owner);
+    //this.CardLayer.actionCard(num, type, owner);
   }
   ticcker() {
     this.ticker.add(d => {
@@ -87,11 +89,24 @@ export default class BlackJack extends PIXI.Application {
     this.Table.add();
     this.ticcker();
     this.CardLayer.addLayers();
-    this.CardLayer.actionCard("5", "karo", Owner.player1);
-    this.CardLayer.actionCard("5", "karo", Owner.player2);
-    this.CardLayer.actionCard("5", "karo", Owner.player3);
-    this.CardLayer.actionCard("5", "karo", Owner.player4);
-    this.CardLayer.actionCard("5", "karo", Owner.player5);
+    const showCards = (owner, i, A) => {
+      for (let a = 0; a < A; a++) {
+        setTimeout(() => {
+          this.CardLayer.actionCard("5", "karo", owner, i);
+        }, 2000 * (a + 1));
+      }
+    }
+    showCards(Owner.player1, 1, 5);
+    showCards(Owner.player1, 2, 3);
+    showCards(Owner.player2, 0, 10);
+    showCards(Owner.player3, 0, 10);
   }
 }
-(window as any).context = new BlackJack();
+
+function calculateScale() {
+  const sW = (screen.width > 1024 ? window.innerWidth : screen.width) / W;
+  const sH = (screen.width > 1024 ? window.innerHeight : screen.height) / H;
+  const s = sW > sH ? sH : sW;
+  (window as any).context = new BlackJack(s);
+}
+calculateScale();

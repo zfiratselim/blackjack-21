@@ -1,4 +1,4 @@
-import { Coords, CardConCoords } from "./interface";
+import { Coord, CardConCoords } from "./interface";
 
 export const W = 1495;
 export const H = 840;
@@ -9,19 +9,56 @@ export const cardSizes = {
 }
 
 export const cardConSizesForTable = {
-  width: 100,
-  height: 130
+  width: 90,
+  height: 117
 }
 
 export const cardScale: number = cardConSizesForTable.width / cardSizes.width;
 
+export const dealerCordandRot: { coord: Coord, rotation: number } = {
+  coord: { x: W - 350, y: 300 },
+  rotation: 0
+};
+
 export const cardConCoords: CardConCoords[] = [
-  { coord: { x: 360, y: 330 }, rotation: .8 },
-  { coord: { x: 500, y: 460 }, rotation: .4 },
-  { coord: { x: (W - cardSizes.width / 2) / 2, y: 520 }, rotation: 0 },
-  { coord: { x: W - cardSizes.width / 2 - 500, y: 500 }, rotation: -.4 },
-  { coord: { x: W - cardSizes.width / 2 - 350, y: 400 }, rotation: -.8 }
+  {
+    coords: [
+      { x: 440, y: 340 },
+      { x: 345, y: 330 },
+      { x: 450, y: 435 }
+    ],
+    raiseX: -8,
+    raiseY: -30,
+    newPerX: -55,
+    newPerY: 60,
+    rotation: .8
+  },
+  {
+    coords: [
+      { x: (W - cardSizes.width / 2) / 2 - 20, y: 460 },
+      { x: (W - cardSizes.width / 2) / 2 - 100, y: 530 },
+      { x: (W - cardSizes.width / 2) / 2 + 60, y: 530 }
+    ],
+    raiseX: -20,
+    raiseY: -25,
+    newPerX: -10,
+    newPerY: 75,
+    rotation: 0
+  },
+  {
+    coords: [
+      { x: W - cardSizes.width / 2 - 470, y: 410 },
+      { x: W - cardSizes.width / 2 - 505, y: 510 },
+      { x: W - cardSizes.width / 2 - 365, y: 435 }
+    ],
+    raiseX: -30,
+    raiseY: -20,
+    newPerX: 15,
+    newPerY: 55,
+    rotation: -.5
+  },
 ]
+
 export const kurdeleCoords = {
   center: { x: W / 2 - cardSizes.width / 2, y: H / 2 - 40 },
   dealer: { x: W / 2 - cardSizes.width / 2, y: 120 },
