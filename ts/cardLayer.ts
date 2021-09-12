@@ -85,6 +85,9 @@ export default class CardLayer {
       e.card.y += e.brmCoord.y;
       e.brmRot ? e.card.rotation += e.brmRot : "";
       e.scaleForX ? e.card.scale.set(e.card.scale.x += e.brmScaleForX, 1) : "";
+      if(e.time==15){
+        this.Card.addCard(e.card);
+      }
       if (e.time == 30) {
         e.card.position.set(e.targetCoord.x, e.targetCoord.y);
         e.rotation = e.rotation;

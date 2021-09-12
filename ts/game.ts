@@ -92,11 +92,11 @@ export default class BlackJack extends PIXI.Application {
     const showCards = (owner, i, A) => {
       for (let a = 0; a < A; a++) {
         setTimeout(() => {
-          this.CardLayer.actionCard("5", "karo", owner, i);
+          this.CardLayer.actionCard("4", "kupa", owner, i);
         }, 2000 * (a + 1));
       }
     }
-    showCards(Owner.player3, 2, 8);
+    showCards(Owner.player1, 0, 4);
   }
 }
 

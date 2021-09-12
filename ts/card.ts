@@ -76,38 +76,37 @@ export default class Card {
     card.addChild(bg);
     return card;
   }
-  addCard(name: string, puan: number, type: string, { x, y }: { x: number, y: number }) {
+  addCard(card: CardIntFace) {
+    const arkataraf = card.children[0];
+    arkataraf.destroy();
+    const intornCard = new PIXI.Container();
+
+    const name = card.name;
+    const type = card.type;
+
     const color = (type == "kupa" || type == "karo") ? 0xFF0000 : 0x000000;
-    const card = new PIXI.Container() as CardIntFace;
     const bgTexture = this.addReactange();
     const bg = PIXI.Sprite.from(bgTexture);
     const cardNum = this.addCardNum(name, color, type);
 
-    card.position.set(x, y);
-
-    card.puan = puan;
-    card.name = name;
-    card.type = type;
-
     bg.position.set(0, 0);
 
-    card.addChild(bg, cardNum);
+    intornCard.addChild(bg, cardNum);
 
     if (name == "J" || name == "Q" || name == "K") {
       const e = this.cElPos[name];
       const images = this.addRoyalCardImages(name, color);
       Object.assign(images.hat, e.hat);
       Object.assign(images.mugsoft, e.logo);
-      card.addChild(images.hat, images.mugsoft)
+      intornCard.addChild(images.hat, images.mugsoft)
     } else {
       const el = this.addCardType(type);
       Object.assign(el, this.cardElemsForNum)
-      card.addChild(el);
+      intornCard.addChild(el);
     }
-
-    card.width = cardSizes.width * this.cardScale;
-    card.height = cardSizes.height * this.cardScale;
-    //card.scale.set(this.cardScale)
-    return card
+    intornCard.width = cardSizes.width * this.cardScale;
+    intornCard.height = cardSizes.height * this.cardScale;
+    intornCard.scale.set(-1*this.cardScale, 1*this.cardScale);
+    card.addChild(intornCard);
   }
 }
