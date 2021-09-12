@@ -1,9 +1,8 @@
 import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
-import Tween from "tween.ts";
 import Card from "./card";
 import { cardConCoords, cardScale, dealerCordandRot } from "./config";
-import { CardIntFace, Owner, CardConCoords, Coord } from "./interface";
+import { CardIntFace, Owner, ActionCardIntFace, Coord } from "./interface";
 
 export default class CardLayer {
   private renderer;
@@ -14,12 +13,44 @@ export default class CardLayer {
   middle = new PIXI.Container();
   private upper = new PIXI.Container();
 
-  private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []]]
+  private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []]];
+  private actionCardList: ActionCardIntFace[] = [];
+
   constructor(stage, renderer) {
     this.stage = stage;
     this.renderer = renderer;
     this.Card = new Card(cardScale, this.renderer);
   }
+
+  setActionCardList(card: PIXI.Container, targetCoord: Coord, rotation?: number, onComplete?: () => void, scaleForX?: number) {
+    const numberOfFrames = 30;
+    const actionCard: ActionCardIntFace = {} as ActionCardIntFace;
+    if(scaleForX==-1){
+      
+    }
+    const brmCoord = {
+      x: (targetCoord.x - card.x) / numberOfFrames,
+      y: (targetCoord.y - card.y) / numberOfFrames
+    }
+
+    actionCard.time = 0;
+    actionCard.card = card;
+    actionCard.targetCoord = targetCoord;
+    actionCard.brmCoord = brmCoord;
+
+    if (onComplete) actionCard.onComplete = onComplete;
+    if (rotation) {
+      console.log(rotation);
+      actionCard.rotation = rotation;
+      actionCard.brmRot = (rotation - card.rotation) / numberOfFrames;
+    }
+    if (scaleForX) {
+      actionCard.scaleForX = scaleForX;
+      actionCard.brmScaleForX = (scaleForX - card.scale.x) / numberOfFrames
+    }
+    this.actionCardList.push(actionCard);
+  }
+
   private addCircle(size) {
     let circle = new Graphics();
     circle.beginFill(0xFFFFFF);
@@ -47,15 +78,19 @@ export default class CardLayer {
     })
   }
 
-  action(Elem: PIXI.Container, targetCoord: Coord, rotation?: number, fn?: () => void) {
-    return new Tween.Tween(Elem)
-      .to({ x: targetCoord.x, y: targetCoord.y, rotation }, 1000)
-      .easing(Tween.Easing.Cubic.In)
-      .start()
-      .onComplete(() => {
-        Elem.scale.set(1);
-        fn && fn();
-      })
+  action() {
+    this.actionCardList.forEach((e, i) => {
+      e.time++;
+      e.card.x += e.brmCoord.x;
+      e.card.y += e.brmCoord.y;
+      e.brmRot ? e.card.rotation += e.brmRot : "";
+      e.scaleForX ? e.card.scale.set(e.card.scale.x += e.brmScaleForX, 1) : "";
+      if (e.time == 30) {
+        e.card.position.set(e.targetCoord.x, e.targetCoord.y);
+        e.rotation = e.rotation;
+        this.actionCardList.splice(i, 1);
+      }
+    })
   }
 
   addLayers() {
@@ -86,19 +121,20 @@ export default class CardLayer {
     this.middle.addChild(card);
     if (gameCardArr.length < 4) {
       gameCardArr.forEach(e => {
-        this.action(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY });
+        this.setActionCardList(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY });
       })
-      this.action(card, targetInfo.coords[coordIndex], targetInfo.rotation, fn);
+      console.log(targetInfo.rotation)
+      this.setActionCardList(card, targetInfo.coords[coordIndex], targetInfo.rotation, fn, -1);
     }
     else {
       const target = gameCardArr[gameCardArr.length - 4];
-      this.action(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, targetInfo.rotation, fn);
+      this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, targetInfo.rotation, fn,-1);
     }
 
     gameCardArr.push(card);
   }
 
-  update(lastTime: number) {
-    Tween.update(lastTime);
+  update() {
+    this.action()
   }
 }

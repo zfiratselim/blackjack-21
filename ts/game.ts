@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import Chip from "./chip";
 import CardLayer from "./cardLayer";
-import { W, H, totalPuanCoords, cardConCoords, cardConSizesForTable } from "./config";
+import { W, H, cardConCoords, cardConSizesForTable } from "./config";
 import { Owner } from "./interface";
 
 
@@ -22,7 +22,7 @@ class Table {
   private addCardCons(BGCon: PIXI.Container) {
     cardConCoords.forEach(e => {
       const cardConReact = this.addReactange(e.rotation);
-      cardConReact.position.set(e.coords[0].x, e.coords[0].y);
+      cardConReact.position.set(e.coords[3].x, e.coords[3].y);
       BGCon.addChild(cardConReact)
     })
   }
@@ -82,7 +82,7 @@ export default class BlackJack extends PIXI.Application {
   }
   ticcker() {
     this.ticker.add(d => {
-      this.CardLayer.update(this.ticker.lastTime)
+      this.CardLayer.update()
     })
   }
   startGame() {
@@ -96,10 +96,7 @@ export default class BlackJack extends PIXI.Application {
         }, 2000 * (a + 1));
       }
     }
-    showCards(Owner.player1, 1, 5);
-    showCards(Owner.player1, 2, 3);
-    showCards(Owner.player2, 0, 10);
-    showCards(Owner.player3, 0, 10);
+    showCards(Owner.player3, 2, 8);
   }
 }
 

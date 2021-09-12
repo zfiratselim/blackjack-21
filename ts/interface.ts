@@ -30,6 +30,19 @@ export enum Owner {
     player5,
     kasa
 }
+
+export interface ActionCardIntFace {
+    card: PIXI.Container,
+    targetCoord: Coord,
+    brmCoord: Coord,
+    time: number,
+    scaleForX: number,
+    brmScaleForX: number,
+    rotation?: number,
+    brmRot?: number
+    onComplete?: () => void
+}
+
 export enum CardNum {
     CC = 0,
     CA = 11,
