@@ -17,9 +17,9 @@ export default class Card {
     this.renderer = renderer
     this.cardScale = cardScale;
   }
-  private addReactange() {
+  private addReactange(color: number = 0xFFFFFF) {
     let rectangle = new Graphics();
-    rectangle.beginFill(0xFFFFFF);
+    rectangle.beginFill(color);
     rectangle.lineStyle(1, 0x000000, .5);
     rectangle.drawRoundedRect(0, 0, cardSizes.width, cardSizes.height, 10);
     rectangle.endFill();
@@ -76,7 +76,7 @@ export default class Card {
     card.addChild(bg);
     return card;
   }
-  addCardArkaTaraf(card:CardIntFace){
+  addCardArkaTaraf(card: CardIntFace) {
     const intornCard = card.children[0];
     intornCard.destroy();
     const arkataraf = PIXI.Sprite.from("arkataraf");
@@ -84,6 +84,17 @@ export default class Card {
     arkataraf.width = cardSizes.width * this.cardScale;
     arkataraf.height = cardSizes.height * this.cardScale;
     card.addChild(arkataraf);
+  }
+  addPlasticCard(card: CardIntFace) {
+    const cardSurface = card.children[0];
+    cardSurface.destroy();
+
+    const rectangle = PIXI.Sprite.from(this.addReactange(0xBA0000));
+    rectangle.position.set(0, 0);
+    rectangle.width = cardSizes.width * this.cardScale;
+    rectangle.height = cardSizes.height * this.cardScale;
+    
+    card.addChild(rectangle);
   }
   addCard(card: CardIntFace) {
     const arkataraf = card.children[0];
@@ -115,7 +126,7 @@ export default class Card {
     }
     intornCard.width = cardSizes.width * this.cardScale;
     intornCard.height = cardSizes.height * this.cardScale;
-    intornCard.scale.set(-1*this.cardScale, 1*this.cardScale);
+    intornCard.scale.set(-1 * this.cardScale, 1 * this.cardScale);
     card.addChild(intornCard);
   }
 }

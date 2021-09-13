@@ -14,6 +14,7 @@ export default class CardLayer {
   private upper = new PIXI.Container();
 
   private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []], [[], [], []]];
+  private fakeCards: CardIntFace[] = [];
   private actionCardList: ActionCardIntFace[] = [];
 
   constructor(stage, renderer) {
@@ -93,18 +94,25 @@ export default class CardLayer {
       }
     })
   }
+  addPlasticCard(n: number) {
+    this.Card.addPlasticCard(this.fakeCards[n]);
+    if (n < this.fakeCards.length - 1) {
+      this.Card.addCardArkaTaraf(this.fakeCards[n + 1]);
+    }
+  }
   addFakeCard() {
     for (let i = 0; i < 10; i++) {
       const coord = {
         x: dealerCordandRot.coord.x,
         y: dealerCordandRot.coord.y - 20 + 3 * i
       }
-
       const fakeCard = this.Card.add("4", 4, "karo", coord);
       fakeCard.rotation = -dealerCordandRot.rotation - Math.PI / 2;
       fakeCard.scale.set(.8);
       this.middle.addChild(fakeCard);
+      this.fakeCards.push(fakeCard);
     }
+    this.fakeCards=this.fakeCards.reverse();
   }
   addLayers() {
     this.stage.addChild(this.lower, this.middle, this.upper);
