@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import Card from "./card";
-import { cardConCoords, cardScale, dealerCordandRot } from "./config";
+import { cardConCoords, cardScale, dealerCordandRot, StackOnCoordAndRot } from "./config";
 import { CardIntFace, Owner, ActionCardIntFace, Coord } from "./interface";
 
 export default class CardLayer {
@@ -22,7 +22,7 @@ export default class CardLayer {
     this.Card = new Card(cardScale, this.renderer);
   }
 
-  setActionCardList(card: PIXI.Container, targetCoord: Coord, numOfAniFrame: number, rotation?: number, onComplete?: () => void, scaleForX?: number) {
+  setActionCardList(card: PIXI.Container, targetCoord: Coord, numOfAniFrame: number, rotation?: number, changeSurface?: () => void, onComplete?: () => void, scaleForX?: number) {
     const actionCard: ActionCardIntFace = {} as ActionCardIntFace;
     const brmCoord = {
       x: (targetCoord.x - card.x) / numOfAniFrame,
@@ -35,6 +35,7 @@ export default class CardLayer {
     actionCard.brmCoord = brmCoord;
     actionCard.numOfAniFrame = numOfAniFrame;
     if (onComplete) actionCard.onComplete = onComplete;
+    if (changeSurface) actionCard.changeSurface = changeSurface;
     if (rotation) {
       actionCard.rotation = rotation;
       actionCard.brmRot = (rotation - card.rotation) / numOfAniFrame;
@@ -81,22 +82,35 @@ export default class CardLayer {
       e.card.y += e.brmCoord.y;
       e.brmRot ? e.card.rotation += e.brmRot : "";
       e.scaleForX ? e.card.scale.set(e.card.scale.x += e.brmScaleForX, 1) : "";
-      if (e.time == e.numOfAniFrame / 2) {
-        this.Card.addCard(e.card);
+      if (e.changeSurface && e.time == e.numOfAniFrame / 2) {
+        e.changeSurface();
       }
       if (e.time == e.numOfAniFrame) {
         e.card.position.set(e.targetCoord.x, e.targetCoord.y);
         e.rotation = e.rotation;
         this.actionCardList.splice(i, 1);
+        if (e.onComplete) e.onComplete();
       }
     })
   }
+  addFakeCard() {
+    for (let i = 0; i < 10; i++) {
+      const coord = {
+        x: dealerCordandRot.coord.x,
+        y: dealerCordandRot.coord.y - 20 + 3 * i
+      }
 
+      const fakeCard = this.Card.add("4", 4, "karo", coord);
+      fakeCard.rotation = -dealerCordandRot.rotation - Math.PI / 2;
+      fakeCard.scale.set(.8);
+      this.middle.addChild(fakeCard);
+    }
+  }
   addLayers() {
     this.stage.addChild(this.lower, this.middle, this.upper);
     this.addCardBoxAltUst("cardAltlik", this.lower);
     this.addCardBoxAltUst("cardUstluk", this.upper);
-    this.Card.add("4", 4, "karo", { x: 150, y: 150 })
+    this.addFakeCard();
   }
 
   addCardBoxAltUst(imgName: "cardAltlik" | "cardUstluk", parent) {
@@ -108,14 +122,21 @@ export default class CardLayer {
     cardAltlik.position.set(dealerCordandRot.coord.x, dealerCordandRot.coord.y);
     parent.addChild(cardAltlik);
   }
+  addNewCard(n: string, type: string, owner: Owner, i) {
+    this.actionCard(n, type, owner, i, true);
+  }
 
-  actionCard(n: string, type: string, owner: Owner, coordIndex: number, fn?: () => void) {
+  actionCard(n: string, type: string, owner: Owner, coordIndex: number, changeSurface?: boolean, onComplete?: () => void) {
     const number = (n == "J" || n == "Q" || n == "K") ? 10 : n == "A" ? 11 : Number(n);
     const gameCardArr = this.gameCards[owner][coordIndex]
     const coord = dealerCordandRot.coord;
     coord.y += 4;
     const card: CardIntFace = this.Card.add(n, number, type, coord);
     const targetInfo = cardConCoords[owner];
+    const addCardSurface = () => this.Card.addCard(card);
+    const changeSurfaceFunc = changeSurface ? addCardSurface : () => { };
+
+
     card.rotation = -dealerCordandRot.rotation - Math.PI / 2;
     card.scale.set(.8);
     this.middle.addChild(card);
@@ -123,7 +144,7 @@ export default class CardLayer {
       gameCardArr.forEach(e => {
         this.setActionCardList(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY }, 60);
       });
-      this.setActionCardList(card, targetInfo.coords[coordIndex], 60, targetInfo.rotation, fn, -1);
+      this.setActionCardList(card, targetInfo.coords[coordIndex], 60, targetInfo.rotation, changeSurfaceFunc, onComplete, -1);
     }
     else {
       const target = gameCardArr[gameCardArr.length - 4];
@@ -132,9 +153,15 @@ export default class CardLayer {
     gameCardArr.push(card);
   }
   stackOnCards(owner, cardsIndex) {
-    const cards: CardIntFace[] = this.gameCards[owner][cardsIndex]
+    const cards: CardIntFace[] = this.gameCards[owner][cardsIndex];
     cards.forEach(e => {
-      this.setActionCardList(e, cardConCoords[owner].coords[3], 20, 0, () => { }, 1)
+      const changeSurface = () => { this.Card.addCardArkaTaraf(e) };
+      const onComplete = () => {
+        setTimeout(() => {
+          this.setActionCardList(e, StackOnCoordAndRot.coord, 30, StackOnCoordAndRot.rotation)
+        }, 200);
+      }
+      this.setActionCardList(e, cardConCoords[owner].coords[0], 20, 0, changeSurface, onComplete, 1)
     })
   }
   update() {

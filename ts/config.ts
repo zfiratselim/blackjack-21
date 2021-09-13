@@ -20,13 +20,17 @@ export const dealerCordandRot: { coord: Coord, rotation: number } = {
   rotation: 0
 };
 
+export const StackOnCoordAndRot: { coord: Coord, rotation: number } = {
+  rotation:  Math.PI / 2,
+  coord: { x: 320, y: 120 }
+}
+
 export const cardConCoords: CardConCoords[] = [
   {
     coords: [
       { x: 440, y: 320 },// ilk kart yeri
       { x: 345, y: 310 },//
       { x: 450, y: 415 },//split den sonraki iki kart yeri
-      { x: 565, y: 450 },// kartları kapatıp toplamak için kullanılan kart yeri
     ],
     raiseX: 5,
     raiseY: -28,
@@ -60,7 +64,7 @@ export const cardConCoords: CardConCoords[] = [
   },
   {
     coords: [
-      { x: (W - cardSizes.width / 2) / 2 - 30, y:180 },
+      { x: (W - cardSizes.width / 2) / 2 - 30, y: 180 },
     ],
     raiseX: -20,
     raiseY: -25,

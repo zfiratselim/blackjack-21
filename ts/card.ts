@@ -76,6 +76,15 @@ export default class Card {
     card.addChild(bg);
     return card;
   }
+  addCardArkaTaraf(card:CardIntFace){
+    const intornCard = card.children[0];
+    intornCard.destroy();
+    const arkataraf = PIXI.Sprite.from("arkataraf");
+    arkataraf.position.set(0, 0);
+    arkataraf.width = cardSizes.width * this.cardScale;
+    arkataraf.height = cardSizes.height * this.cardScale;
+    card.addChild(arkataraf);
+  }
   addCard(card: CardIntFace) {
     const arkataraf = card.children[0];
     arkataraf.destroy();

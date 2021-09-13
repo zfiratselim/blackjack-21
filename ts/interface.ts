@@ -28,7 +28,6 @@ export enum Owner {
     player3,
     kasa
 }
-
 export interface ActionCardIntFace {
     card: PIXI.Container,
     targetCoord: Coord,
@@ -38,7 +37,8 @@ export interface ActionCardIntFace {
     numOfAniFrame: number,
     brmScaleForX: number,
     rotation?: number,
-    brmRot?: number
+    brmRot?: number,
+    changeSurface?: () => void,
     onComplete?: () => void
 }
 
