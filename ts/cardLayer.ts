@@ -87,13 +87,13 @@ export default class CardLayer {
         x: dealerCordandRot.coord.x,
         y: dealerCordandRot.coord.y - 20 + 3 * i
       }
-      const fakeCard = this.Card.add("4", 4, "karo", coord);
+      const fakeCard = this.Card.add("4", "karo", coord);
       fakeCard.rotation = -dealerCordandRot.rotation - Math.PI / 2;
       fakeCard.scale.set(.8);
       this.middle.addChild(fakeCard);
       this.fakeCards.push(fakeCard);
     }
-    this.fakeCards=this.fakeCards.reverse();
+    this.fakeCards = this.fakeCards.reverse();
   }
   addLayers() {
     this.stage.addChild(this.lower, this.middle, this.upper);
@@ -115,12 +115,11 @@ export default class CardLayer {
     this.actionCard(n, type, owner, i, true);
   }
 
-  actionCard(n: string, type: string, owner: Owner, coordIndex: number, changeSurface?: boolean, onComplete?: () => void) {
-    const number = (n == "J" || n == "Q" || n == "K") ? 10 : n == "A" ? 11 : Number(n);
+  actionCard(n: string, type: string, owner: Owner, coordIndex: number, changeSurface?: boolean, onComplt?: () => void) {
     const gameCardArr = this.gameCards[owner][coordIndex]
     const coord = dealerCordandRot.coord;
     coord.y += 4;
-    const card: CardIntFace = this.Card.add(n, number, type, coord);
+    const card: CardIntFace = this.Card.add(n, type, coord);
     const targetInfo = cardConCoords[owner];
     const addCardSurface = () => this.Card.addCard(card);
     const changeSurfaceFunc = changeSurface ? addCardSurface : () => { };
@@ -131,16 +130,23 @@ export default class CardLayer {
     this.middle.addChild(card);
     if (gameCardArr.length < 4) {
       gameCardArr.forEach(e => {
-        this.setActionCardList(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY }, 60);
+        this.setActionCardList(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY }, 40);
       });
-      this.setActionCardList(card, targetInfo.coords[coordIndex], 60, targetInfo.rotation, changeSurfaceFunc, onComplete, -1);
+      const onComplete = () => {
+        this.setActionCardList(card, targetInfo.coords[coordIndex], 40, targetInfo.rotation, changeSurfaceFunc, onComplt, -1);
+      }
+      this.setActionCardList(card, { x: dealerCordandRot.coord.x, y: dealerCordandRot.coord.y + 80 }, 20, 0, () => { }, onComplete);
     }
     else {
       const target = gameCardArr[gameCardArr.length - 4];
-      this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, 60, targetInfo.rotation, fn, -1);
+      const onComplete = () => {
+        this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, 40, targetInfo.rotation, () => { }, onComplt, -1);
+      }
+      this.setActionCardList(card, { x: dealerCordandRot.coord.x, y: dealerCordandRot.coord.y + 80 }, 20, 0, () => { }, onComplete);
     }
     gameCardArr.push(card);
   }
+
   stackOnCards(owner, cardsIndex) {
     const cards: CardIntFace[] = this.gameCards[owner][cardsIndex];
     cards.forEach(e => {
