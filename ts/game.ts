@@ -44,7 +44,6 @@ export default class BlackJack extends PIXI.Application {
   Chip = new Chip();
   Table = new Table(this.stage);
   CardLayer = new CardLayer(this.stage, this.renderer);
-  totalPuanText: PIXI.Text[] = [];
   constructor(s) {
     super({
       view: <HTMLCanvasElement>document.querySelector("#canvas"),

@@ -14,7 +14,6 @@ export interface CardConCoords {
     rotation: number
 }
 export interface CardIntFace extends PIXI.Container {
-    puan: number,
     name: string,
     type: string
 }

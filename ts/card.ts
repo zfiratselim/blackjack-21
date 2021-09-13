@@ -61,11 +61,10 @@ export default class Card {
     numCon.addChild(num, typeImg);
     return numCon
   }
-  add(name: string, puan: number, type: string, { x, y }: { x: number, y: number }) {
+  add(name: string, type: string, { x, y }: { x: number, y: number }) {
     const card = new PIXI.Container() as CardIntFace;
     const bg = PIXI.Sprite.from("arkataraf");
 
-    card.puan = puan;
     card.name = name;
     card.type = type;
     card.position.set(x, y);

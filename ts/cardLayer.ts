@@ -56,25 +56,6 @@ export default class CardLayer {
     return circle
   }
 
-  addTotalPuans() {
-    totalPuanCoords.forEach((e, i) => {
-      const Container = new PIXI.Container();
-      const circle = this.addCircle(40);
-      const puan = new PIXI.Text(0 + "", { fontSize: 32 });
-
-      circle.tint = 0x000000;
-      circle.alpha = .3;
-      circle.position.set(40, 40);
-
-      puan.anchor.set(.5);
-      puan.position.set(40, 40);
-
-      Container.position.set(e.x, e.y);
-      Container.addChild(circle, puan);
-      this.stage.addChild(Container);
-      this.totalPuanText.push(puan);
-    })
-  }
 
   action() {
     this.actionCardList.forEach((e, i) => {

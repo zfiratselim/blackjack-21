@@ -89,10 +89,6 @@ export const chipCoords: { x: number, y: number }[] = [
   { x: 850, y: H / 10 - 60 },
 ];
 
-export const totalPuanCoords = [
-  { x: W - 500, y: 60 + cardSizes.height * .8 - 80 },
-  { x: W - 500, y: H - 300 }
-]
 
 export const cardsElementsPosiiton = {
   "J": {
