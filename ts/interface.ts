@@ -26,8 +26,6 @@ export enum Owner {
     player1,
     player2,
     player3,
-    player4,
-    player5,
     kasa
 }
 
@@ -37,6 +35,7 @@ export interface ActionCardIntFace {
     brmCoord: Coord,
     time: number,
     scaleForX: number,
+    numOfAniFrame: number,
     brmScaleForX: number,
     rotation?: number,
     brmRot?: number

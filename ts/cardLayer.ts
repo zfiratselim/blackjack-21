@@ -13,7 +13,7 @@ export default class CardLayer {
   middle = new PIXI.Container();
   private upper = new PIXI.Container();
 
-  private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []]];
+  private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []], [[], [], []]];
   private actionCardList: ActionCardIntFace[] = [];
 
   constructor(stage, renderer) {
@@ -22,31 +22,26 @@ export default class CardLayer {
     this.Card = new Card(cardScale, this.renderer);
   }
 
-  setActionCardList(card: PIXI.Container, targetCoord: Coord, rotation?: number, onComplete?: () => void, scaleForX?: number) {
-    const numberOfFrames = 30;
+  setActionCardList(card: PIXI.Container, targetCoord: Coord, numOfAniFrame: number, rotation?: number, onComplete?: () => void, scaleForX?: number) {
     const actionCard: ActionCardIntFace = {} as ActionCardIntFace;
-    if(scaleForX==-1){
-      
-    }
     const brmCoord = {
-      x: (targetCoord.x - card.x) / numberOfFrames,
-      y: (targetCoord.y - card.y) / numberOfFrames
+      x: (targetCoord.x - card.x) / numOfAniFrame,
+      y: (targetCoord.y - card.y) / numOfAniFrame
     }
 
     actionCard.time = 0;
     actionCard.card = card;
     actionCard.targetCoord = targetCoord;
     actionCard.brmCoord = brmCoord;
-
+    actionCard.numOfAniFrame = numOfAniFrame;
     if (onComplete) actionCard.onComplete = onComplete;
     if (rotation) {
-      console.log(rotation);
       actionCard.rotation = rotation;
-      actionCard.brmRot = (rotation - card.rotation) / numberOfFrames;
+      actionCard.brmRot = (rotation - card.rotation) / numOfAniFrame;
     }
     if (scaleForX) {
       actionCard.scaleForX = scaleForX;
-      actionCard.brmScaleForX = (scaleForX - card.scale.x) / numberOfFrames
+      actionCard.brmScaleForX = (scaleForX - card.scale.x) / numOfAniFrame;
     }
     this.actionCardList.push(actionCard);
   }
@@ -58,6 +53,7 @@ export default class CardLayer {
     circle.endFill();
     return circle
   }
+
   addTotalPuans() {
     totalPuanCoords.forEach((e, i) => {
       const Container = new PIXI.Container();
@@ -85,10 +81,10 @@ export default class CardLayer {
       e.card.y += e.brmCoord.y;
       e.brmRot ? e.card.rotation += e.brmRot : "";
       e.scaleForX ? e.card.scale.set(e.card.scale.x += e.brmScaleForX, 1) : "";
-      if(e.time==15){
+      if (e.time == e.numOfAniFrame / 2) {
         this.Card.addCard(e.card);
       }
-      if (e.time == 30) {
+      if (e.time == e.numOfAniFrame) {
         e.card.position.set(e.targetCoord.x, e.targetCoord.y);
         e.rotation = e.rotation;
         this.actionCardList.splice(i, 1);
@@ -100,6 +96,7 @@ export default class CardLayer {
     this.stage.addChild(this.lower, this.middle, this.upper);
     this.addCardBoxAltUst("cardAltlik", this.lower);
     this.addCardBoxAltUst("cardUstluk", this.upper);
+    this.Card.add("4", 4, "karo", { x: 150, y: 150 })
   }
 
   addCardBoxAltUst(imgName: "cardAltlik" | "cardUstluk", parent) {
@@ -124,19 +121,22 @@ export default class CardLayer {
     this.middle.addChild(card);
     if (gameCardArr.length < 4) {
       gameCardArr.forEach(e => {
-        this.setActionCardList(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY });
-      })
-      console.log(targetInfo.rotation)
-      this.setActionCardList(card, targetInfo.coords[coordIndex], targetInfo.rotation, fn, -1);
+        this.setActionCardList(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY }, 60);
+      });
+      this.setActionCardList(card, targetInfo.coords[coordIndex], 60, targetInfo.rotation, fn, -1);
     }
     else {
       const target = gameCardArr[gameCardArr.length - 4];
-      this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, targetInfo.rotation, fn,-1);
+      this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, 60, targetInfo.rotation, fn, -1);
     }
-
     gameCardArr.push(card);
   }
-
+  stackOnCards(owner, cardsIndex) {
+    const cards: CardIntFace[] = this.gameCards[owner][cardsIndex]
+    cards.forEach(e => {
+      this.setActionCardList(e, cardConCoords[owner].coords[3], 20, 0, () => { }, 1)
+    })
+  }
   update() {
     this.action()
   }

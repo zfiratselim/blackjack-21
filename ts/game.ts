@@ -22,7 +22,7 @@ class Table {
   private addCardCons(BGCon: PIXI.Container) {
     cardConCoords.forEach(e => {
       const cardConReact = this.addReactange(e.rotation);
-      cardConReact.position.set(e.coords[3].x, e.coords[3].y);
+      cardConReact.position.set(e.coords[0].x, e.coords[0].y);
       BGCon.addChild(cardConReact)
     })
   }
@@ -93,10 +93,12 @@ export default class BlackJack extends PIXI.Application {
       for (let a = 0; a < A; a++) {
         setTimeout(() => {
           this.CardLayer.actionCard("4", "kupa", owner, i);
+          console.log(Owner.kasa);
         }, 2000 * (a + 1));
       }
     }
-    showCards(Owner.player1, 0, 4);
+    showCards(Owner.player1, 0, 3);
+    setTimeout(() => this.CardLayer.stackOnCards(Owner.player1, 0), 8000)
   }
 }
 

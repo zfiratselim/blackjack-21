@@ -23,10 +23,10 @@ export const dealerCordandRot: { coord: Coord, rotation: number } = {
 export const cardConCoords: CardConCoords[] = [
   {
     coords: [
-      { x: 440, y: 320 },
-      { x: 345, y: 310 },
-      { x: 450, y: 415 },
-      { x: 440, y: 320 }
+      { x: 440, y: 320 },// ilk kart yeri
+      { x: 345, y: 310 },//
+      { x: 450, y: 415 },//split den sonraki iki kart yeri
+      { x: 565, y: 450 },// kartları kapatıp toplamak için kullanılan kart yeri
     ],
     raiseX: 5,
     raiseY: -28,
@@ -38,8 +38,7 @@ export const cardConCoords: CardConCoords[] = [
     coords: [
       { x: (W - cardSizes.width / 2) / 2 - 30, y: 460 },
       { x: (W - cardSizes.width / 2) / 2 - 110, y: 530 },
-      { x: (W - cardSizes.width / 2) / 2 + 50, y: 530 },
-      { x: (W - cardSizes.width / 2) / 2 - 30, y: 460 }
+      { x: (W - cardSizes.width / 2) / 2 + 50, y: 530 }
     ],
     raiseX: -20,
     raiseY: -25,
@@ -51,14 +50,23 @@ export const cardConCoords: CardConCoords[] = [
     coords: [
       { x: W - cardSizes.width / 2 - 470, y: 410 },
       { x: W - cardSizes.width / 2 - 505, y: 510 },
-      { x: W - cardSizes.width / 2 - 365, y: 435 },
-      { x: W - cardSizes.width / 2 - 470, y: 410 }
+      { x: W - cardSizes.width / 2 - 365, y: 435 }
     ],
     raiseX: -30,
     raiseY: -15,
     newPerX: 30,
     newPerY: 105,
     rotation: -.5
+  },
+  {
+    coords: [
+      { x: (W - cardSizes.width / 2) / 2 - 30, y:180 },
+    ],
+    raiseX: -20,
+    raiseY: -25,
+    newPerX: -10,
+    newPerY: 90,
+    rotation: .001
   },
 ]
 
