@@ -4,6 +4,7 @@ import Chip from "./chip";
 import CardLayer from "./cardLayer";
 import { W, H, cardConCoords, cardConSizesForTable } from "./config";
 import { Owner } from "./interface";
+import ChipLayer from "./chip";
 
 
 class Table {
@@ -41,9 +42,9 @@ class Table {
 
 
 export default class BlackJack extends PIXI.Application {
-  Chip = new Chip();
   Table = new Table(this.stage);
   CardLayer = new CardLayer(this.stage, this.renderer);
+  Chiplayer = new ChipLayer(this.stage);
   constructor(s) {
     super({
       view: <HTMLCanvasElement>document.querySelector("#canvas"),
@@ -95,7 +96,9 @@ export default class BlackJack extends PIXI.Application {
         }, 2000 * (a + 1));
       }
     }
-    showCards(Owner.player3, 0, 4);
+    this.Chiplayer.addChips(Owner.player3)
+    showCards(Owner.player2, 1, 5);
+    showCards(Owner.player2, 2, 5);
   }
 }
 

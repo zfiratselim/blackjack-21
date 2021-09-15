@@ -1,9 +1,15 @@
 import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
-import { ChipIntFace } from "./interface";
+import { ChipIntFace, Owner } from "./interface";
+import { chipCoordsList } from "./config";
 
 
-export default class Card {
+export default class ChipLayer {
+    private stage;
+    private colors: number[] = [0xffe052, 0x52F3a6, 0xf829c2, 0x89d496, 0x06d3d2];
+    constructor(stage) {
+        this.stage = stage
+    }
     private addCircle(size) {
         let circle = new Graphics();
         circle.beginFill(0xFFFFFF);
@@ -12,12 +18,10 @@ export default class Card {
         return circle
     }
 
-    add(price: number, color: number, Coords: { x: number, y: number }) {
-        const size = 120;
+    add(size: number, color: number, Coords: { x: number, y: number }) {
         const chipCon = new PIXI.Container();
         const chipImage = PIXI.Sprite.from("chip");
         const bgCircle = this.addCircle(size / 2);
-        const priceText = new PIXI.Text(price + "", { fontFamily: "Arial", fontSize: 34, fill: color });
 
         chipCon.position.set(Coords.x, Coords.y);
 
@@ -27,11 +31,17 @@ export default class Card {
         chipImage.height = size;
 
         bgCircle.position.set(size / 2, size / 2)
-        priceText.anchor.set(.5);
 
-        priceText.position.set(size / 2, size / 2);
-
-        chipCon.addChild(bgCircle, chipImage, priceText);
+        chipCon.addChild(bgCircle, chipImage);
         return chipCon as ChipIntFace;
+    }
+    addChips(owner: Owner) {
+        chipCoordsList[owner].forEach((e, i) => {
+            const chip = this.add(40, this.colors[i], e);
+            this.stage.addChild(chip)
+        })
+    }
+    update() {
+
     }
 }

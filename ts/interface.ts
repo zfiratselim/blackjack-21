@@ -11,7 +11,9 @@ export interface CardConCoords {
     raiseY: number,
     newPerX: number,
     newPerY: number,
-    rotation: number
+    rotation: number,
+    totalPuanDistanceX: number,
+    totalPuanDistanceY: number
 }
 export interface CardIntFace extends PIXI.Container {
     name: string,
@@ -41,22 +43,6 @@ export interface ActionCardIntFace {
     onComplete?: () => void
 }
 
-export enum CardNum {
-    CC = 0,
-    CA = 11,
-    CK = 10,
-    CQ = 10,
-    CJ = 10,
-    C2 = 2,
-    C3 = 3,
-    C4 = 4,
-    C5 = 5,
-    C6 = 6,
-    C7 = 7,
-    C8 = 8,
-    C9 = 9,
-    C10 = 10
-}
 
 
 

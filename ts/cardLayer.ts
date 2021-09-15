@@ -14,6 +14,7 @@ export default class CardLayer {
   private upper = new PIXI.Container();
 
   private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []], [[], [], []]];
+  private gameTotalPuanCon: { [key: string]: PIXI.Container } = {};
   private fakeCards: CardIntFace[] = [];
   private actionCardList: ActionCardIntFace[] = [];
 
@@ -48,14 +49,29 @@ export default class CardLayer {
     this.actionCardList.push(actionCard);
   }
 
-  private addCircle(size) {
+  private addCircle(size, color: number) {
     let circle = new Graphics();
-    circle.beginFill(0xFFFFFF);
+    circle.beginFill(color);
     circle.drawCircle(0, 0, size);
     circle.endFill();
     return circle
   }
+  private addTotalPuanCon(coord: Coord, color: number) {
+    const size=18
+    const totalPuanCon = new PIXI.Container();
+    const circle = this.addCircle(size, color);
+    const text = new PIXI.Text("", { fontSize: 20, fill: 0x000000 });
 
+    circle.position.set(size);
+
+    text.anchor.set(.5);
+    text.position.set(size);
+
+    totalPuanCon.position.set(coord.x, coord.y);
+    totalPuanCon.addChild(circle, text);
+    this.upper.addChild(totalPuanCon);
+    return totalPuanCon
+  }
 
   action() {
     this.actionCardList.forEach((e, i) => {
@@ -116,14 +132,13 @@ export default class CardLayer {
   }
 
   actionCard(n: string, type: string, owner: Owner, coordIndex: number, changeSurface?: boolean, onComplt?: () => void) {
-    const gameCardArr = this.gameCards[owner][coordIndex]
+    const gameCardArr = this.gameCards[owner][coordIndex];
     const coord = dealerCordandRot.coord;
     coord.y += 4;
     const card: CardIntFace = this.Card.add(n, type, coord);
     const targetInfo = cardConCoords[owner];
     const addCardSurface = () => this.Card.addCard(card);
     const changeSurfaceFunc = changeSurface ? addCardSurface : () => { };
-
 
     card.rotation = -dealerCordandRot.rotation - Math.PI / 2;
     card.scale.set(.8);
@@ -140,11 +155,21 @@ export default class CardLayer {
     else {
       const target = gameCardArr[gameCardArr.length - 4];
       const onComplete = () => {
-        this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, 40, targetInfo.rotation, () => { }, onComplt, -1);
+        this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, 40, targetInfo.rotation, changeSurfaceFunc, onComplt, -1);
       }
       this.setActionCardList(card, { x: dealerCordandRot.coord.x, y: dealerCordandRot.coord.y + 80 }, 20, 0, () => { }, onComplete);
     }
     gameCardArr.push(card);
+
+    if (gameCardArr.length == 1) {
+      const tCoord = targetInfo.coords[coordIndex]
+      const targetC = {
+        x: tCoord.x + targetInfo.totalPuanDistanceX,
+        y: tCoord.y + targetInfo.totalPuanDistanceY
+      }
+      const totalPuanCon = this.addTotalPuanCon(targetC, 0x0fe244);
+      (totalPuanCon.children[1] as PIXI.Text).text = "25";
+    }
   }
 
   stackOnCards(owner, cardsIndex) {
