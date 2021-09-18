@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import Card from "./card";
 import { cardConCoords, cardScale, dealerCordandRot, StackOnCoordAndRot } from "./config";
-import { CardIntFace, Owner, ActionCardIntFace, Coord } from "./interface";
+import { CardIntFace, Owner, ActionCardIntFace, Coord, NewCardListInt } from "./interface";
 
 export default class CardLayer {
   private renderer;
@@ -10,9 +10,10 @@ export default class CardLayer {
   private Card;
 
   private lower = new PIXI.Container();
-  middle = new PIXI.Container();
+  private middle = new PIXI.Container();
   private upper = new PIXI.Container();
 
+  private newCardList: NewCardListInt[] = []
   private gameCards: CardIntFace[][][] = [[[], [], []], [[], [], []], [[], [], []], [[], [], []]];
   private gameTotalPuanCon: { [key: string]: PIXI.Container } = {};
   private fakeCards: CardIntFace[] = [];
@@ -57,7 +58,7 @@ export default class CardLayer {
     return circle
   }
   private addTotalPuanCon(coord: Coord, color: number) {
-    const size=18
+    const size = 18
     const totalPuanCon = new PIXI.Container();
     const circle = this.addCircle(size, color);
     const text = new PIXI.Text("", { fontSize: 20, fill: 0x000000 });
@@ -127,18 +128,22 @@ export default class CardLayer {
     cardAltlik.position.set(dealerCordandRot.coord.x, dealerCordandRot.coord.y);
     parent.addChild(cardAltlik);
   }
-  addNewCard(n: string, type: string, owner: Owner, i) {
-    this.actionCard(n, type, owner, i, true);
+  getNewCard(newCard: NewCardListInt) {
+    this.newCardList.push(newCard);
+  }
+  addNewCard(newCard: NewCardListInt) {
+    newCard.changeSurface = true;
+    this.actionCard(newCard);
   }
 
-  actionCard(n: string, type: string, owner: Owner, coordIndex: number, changeSurface?: boolean, onComplt?: () => void) {
-    const gameCardArr = this.gameCards[owner][coordIndex];
+  actionCard(newCard: NewCardListInt) {
+    const gameCardArr = this.gameCards[newCard.owner][newCard.coordIndex];
     const coord = dealerCordandRot.coord;
     coord.y += 4;
-    const card: CardIntFace = this.Card.add(n, type, coord);
-    const targetInfo = cardConCoords[owner];
+    const card: CardIntFace = this.Card.add(newCard.n, newCard.type, coord);
+    const targetInfo = cardConCoords[newCard.owner];
     const addCardSurface = () => this.Card.addCard(card);
-    const changeSurfaceFunc = changeSurface ? addCardSurface : () => { };
+    const changeSurfaceFunc = newCard.changeSurface ? addCardSurface : () => { };
 
     card.rotation = -dealerCordandRot.rotation - Math.PI / 2;
     card.scale.set(.8);
@@ -148,21 +153,21 @@ export default class CardLayer {
         this.setActionCardList(e, { x: e.x + targetInfo.raiseX, y: e.y + targetInfo.raiseY }, 40);
       });
       const onComplete = () => {
-        this.setActionCardList(card, targetInfo.coords[coordIndex], 40, targetInfo.rotation, changeSurfaceFunc, onComplt, -1);
+        this.setActionCardList(card, targetInfo.coords[newCard.coordIndex], 40, targetInfo.rotation, changeSurfaceFunc, () => { }, -1);
       }
       this.setActionCardList(card, { x: dealerCordandRot.coord.x, y: dealerCordandRot.coord.y + 80 }, 20, 0, () => { }, onComplete);
     }
     else {
       const target = gameCardArr[gameCardArr.length - 4];
       const onComplete = () => {
-        this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, 40, targetInfo.rotation, changeSurfaceFunc, onComplt, -1);
+        this.setActionCardList(card, { x: target.x + targetInfo.newPerX, y: target.y + targetInfo.newPerY }, 40, targetInfo.rotation, changeSurfaceFunc, () => { }, -1);
       }
       this.setActionCardList(card, { x: dealerCordandRot.coord.x, y: dealerCordandRot.coord.y + 80 }, 20, 0, () => { }, onComplete);
     }
     gameCardArr.push(card);
 
     if (gameCardArr.length == 1) {
-      const tCoord = targetInfo.coords[coordIndex]
+      const tCoord = targetInfo.coords[newCard.coordIndex]
       const targetC = {
         x: tCoord.x + targetInfo.totalPuanDistanceX,
         y: tCoord.y + targetInfo.totalPuanDistanceY
@@ -185,6 +190,10 @@ export default class CardLayer {
     })
   }
   update() {
+    this.newCardList.forEach((e, i) => {
+      this.addNewCard(e);
+      this.newCardList.splice(i, 1);
+    })
     this.action()
   }
 }

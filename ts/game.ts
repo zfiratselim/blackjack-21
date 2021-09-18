@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import Chip from "./chip";
 import CardLayer from "./cardLayer";
+import ButtonLayer from "./buttonLayer";
 import { W, H, cardConCoords, cardConSizesForTable } from "./config";
 import { Owner } from "./interface";
 import ChipLayer from "./chip";
@@ -44,6 +45,7 @@ class Table {
 export default class BlackJack extends PIXI.Application {
   Table = new Table(this.stage);
   CardLayer = new CardLayer(this.stage, this.renderer);
+  private ButtonLayer = new ButtonLayer(this.stage, this.renderer);
   Chiplayer = new ChipLayer(this.stage);
   constructor(s) {
     super({
@@ -92,13 +94,14 @@ export default class BlackJack extends PIXI.Application {
     const showCards = (owner, i, A) => {
       for (let a = 0; a < A; a++) {
         setTimeout(() => {
-          this.CardLayer.addNewCard("4", "kupa", owner, i);
+          this.CardLayer.getNewCard({ n: "4", type: "kupa", owner, coordIndex: i });
         }, 2000 * (a + 1));
       }
     }
     this.Chiplayer.addChips(Owner.player3)
-    showCards(Owner.player2, 1, 5);
-    showCards(Owner.player2, 2, 5);
+    showCards(Owner.player2, 1, 4);
+    showCards(Owner.player2, 2, 4);
+    this.ButtonLayer.addButtons(0);
   }
 }
 

@@ -43,7 +43,14 @@ export interface ActionCardIntFace {
     onComplete?: () => void
 }
 
-
+export interface NewCardListInt {
+    n: string,
+    type: string,
+    owner: Owner,
+    coordIndex: number,
+    changeSurface?: boolean,
+    onComplt?: () => void
+}
 
 
 export interface ChipIntFace extends PIXI.Container {
