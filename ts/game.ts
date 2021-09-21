@@ -62,7 +62,6 @@ export default class BlackJack extends PIXI.Application {
       .add("maca", "images/maca.png")
       .add("kupa", "images/kupa.png")
       .add("arkataraf", "images/arkataraf.png")
-      .add("chip", "images/chip.png")
       .add("button", "images/btn1.png")
       .add("bjTable", "images/bj_table.png")
       .add("cardAltlik", "images/card_altlik.png")
@@ -97,10 +96,7 @@ export default class BlackJack extends PIXI.Application {
     }
     showCards(Owner.player1, 1, 5);
     showCards(Owner.player1, 2, 5);
-    showCards(Owner.player2, 1, 5);
-    showCards(Owner.player2, 2, 5);
-    showCards(Owner.player3, 1, 5);
-    showCards(Owner.player3, 2, 5);
+  
     this.ButtonLayer.addButtons(0);
   }
 }
