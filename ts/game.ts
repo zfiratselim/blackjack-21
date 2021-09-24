@@ -14,7 +14,8 @@ export default class BlackJack extends PIXI.Application {
   private Table = new Table(this.stage);
   private CardLayer = new CardLayer(this.stage, this.renderer);
   private ButtonLayer = new ButtonLayer(this.stage, this.renderer);
-  private BetSlider = new BetSlider(this.stage, this.renderer);
+  private BetSlider;
+  private scale:number;
 
   constructor(s) {
     super({
@@ -23,7 +24,9 @@ export default class BlackJack extends PIXI.Application {
       height: H * s,
       backgroundColor: 0x53FF15
     })
-    this.stage.scale.set(s);
+    this.scale=s;
+    this.stage.scale.set(this.scale);
+    this.BetSlider = new BetSlider(this.stage, this.renderer, this.scale);
     this.loader
       .add("mugSoftLogo", "images/mugsoft.png")
       .add("Q", "images/queen.png")

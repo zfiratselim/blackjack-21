@@ -4,17 +4,19 @@ import { H, W } from "./config";
 import { Coord } from "./interface";
 
 const sliderSizes = {
-  width: 160,
+  width: 150,
   height: 320
 }
 
 export default class BetSlider {
   private stage: PIXI.Container;
   private renderer: PIXI.Renderer;
+  private scale: number;
   private betSliderCon: PIXI.Container = new PIXI.Container;
-  constructor(stage, renderer) {
+  constructor(stage, renderer, scale) {
     this.renderer = renderer;
     this.stage = stage;
+    this.scale = scale;
   }
   private addReactange({ width, height }: { width: number, height: number }, radius: number, color: number) {
     let rectangle = new Graphics();
@@ -48,10 +50,26 @@ export default class BetSlider {
     Object.assign(sliderBG, sliderSizes);
     this.betSliderCon.addChild(sliderBG);
   }
+  private createDragAndDropForSliderButton(target: PIXI.Sprite) {
+    let t: boolean = false;
+    const returnValue = (v) => {
+      t = false;
+      return v
+    }
+    target.interactive = true;
+    target.on("pointerdown", e => t = true)
+    target.on("pointerup", e => t = false)
+    target.on("pointermove", (e) => {
+      if (!t) return;
+      const x = target.position.y + e.data.originalEvent.movementY * (1 / this.scale);
+      target.position.y = x > 280 ? returnValue(280) : x < 25 ? returnValue(25) : x;
+    });
+  }
   private addSliderButton() {
     const sliderScrollButton = PIXI.Sprite.from("sliderScrollButton");
     sliderScrollButton.anchor.set(.5);
-    sliderScrollButton.position.set(sliderSizes.width / 2, 50)
+    sliderScrollButton.position.set(sliderSizes.width / 2, 280);
+    this.createDragAndDropForSliderButton(sliderScrollButton);
     this.betSliderCon.addChild(sliderScrollButton);
   }
   add() {
