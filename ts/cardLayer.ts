@@ -5,8 +5,8 @@ import { cardConCoords, cardScale, dealerCordandRot, StackOnCoordAndRot } from "
 import { CardIntFace, Owner, ActionCardIntFace, Coord, NewCardListInt } from "./interface";
 
 export default class CardLayer {
-  private renderer;
-  private stage;
+  private stage: PIXI.Container;
+  private renderer: PIXI.Renderer;
   private Card;
 
   private lower = new PIXI.Container();

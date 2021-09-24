@@ -4,7 +4,7 @@ import { ButtonIntFace, Coord } from "./interface";
 import { H, W } from "./config";
 
 class Button {
-  private renderer
+  private renderer: PIXI.Renderer;
   constructor(renderer) {
     this.renderer = renderer;
   }

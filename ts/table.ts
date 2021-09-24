@@ -4,7 +4,7 @@ import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import { W, H, cardConCoords, cardConSizesForTable } from "./config";
 
 export default class Table {
-    private stage
+    private stage: PIXI.Container;
     constructor(stage) {
         this.stage = stage;
     }
