@@ -8,14 +8,12 @@ import { W, H } from "./config";
 import { Owner } from "./interface";
 
 
-
-
 export default class BlackJack extends PIXI.Application {
-  private Table = new Table(this.stage);
-  private CardLayer = new CardLayer(this.stage, this.renderer);
-  private ButtonLayer = new ButtonLayer(this.stage, this.renderer);
-  private BetSlider;
-  private scale:number;
+  private Table: Table = new Table(this.stage);
+  private CardLayer: CardLayer = new CardLayer(this.stage, this.renderer);
+  private ButtonLayer: ButtonLayer = new ButtonLayer(this.stage, this.renderer);
+  private BetSlider: BetSlider;
+  private scale: number;
 
   constructor(s) {
     super({
@@ -24,7 +22,7 @@ export default class BlackJack extends PIXI.Application {
       height: H * s,
       backgroundColor: 0x53FF15
     })
-    this.scale=s;
+    this.scale = s;
     this.stage.scale.set(this.scale);
     this.BetSlider = new BetSlider(this.stage, this.renderer, this.scale);
     this.loader
@@ -76,7 +74,7 @@ export default class BlackJack extends PIXI.Application {
     showCards(Owner.player1, 1, 5);
     showCards(Owner.player1, 2, 5);
     this.ButtonLayer.addButtons(1);
-    this.BetSlider.add(10,50);
+    this.BetSlider.add(20, 100);
   }
 }
 

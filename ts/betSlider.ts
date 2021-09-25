@@ -50,12 +50,12 @@ export default class BetSlider {
   private addValueBaloon() {
     const sizes={width:80,height:40}
     this.valueBaloon = new PIXI.Container();
-    const baloonTexture = this.addReactange(sizes, 10, 0x045803);
+    const baloonTexture = this.addReactange(sizes, 15, 0x045803);
     const valueBaloonSpr = PIXI.Sprite.from(baloonTexture);
     
     Object.assign(valueBaloonSpr,sizes);
-
-    const valueText = new PIXI.Text(this.minBet + "", { fill: 0xffffff, fontSize: 25, fontWeight:800 });
+    //@ts-ignore
+    const valueText = new PIXI.Text(this.minBet + "", { fill: 0xffffff, fontSize: 20, fontWeight:800 });
     valueText.anchor.set(.5);
     valueText.position.set(sizes.width/2, 20);
 
