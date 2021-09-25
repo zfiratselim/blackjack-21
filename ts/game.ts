@@ -76,7 +76,7 @@ export default class BlackJack extends PIXI.Application {
     showCards(Owner.player1, 1, 5);
     showCards(Owner.player1, 2, 5);
     this.ButtonLayer.addButtons(1);
-    this.BetSlider.add();
+    this.BetSlider.add(10,50);
   }
 }
 

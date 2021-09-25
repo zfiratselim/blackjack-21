@@ -13,6 +13,9 @@ export default class BetSlider {
   private renderer: PIXI.Renderer;
   private scale: number;
   private betSliderCon: PIXI.Container = new PIXI.Container;
+  private valueBaloon: PIXI.Container;
+  private maxBet: number = 0;
+  private minBet = 0;
   constructor(stage, renderer, scale) {
     this.renderer = renderer;
     this.stage = stage;
@@ -35,8 +38,8 @@ export default class BetSlider {
     }
   }
   private addButtons() {
-    const buttonSizes = { width: 80, height: 35 }
-    const buttonLocs: Coord[] = [{ x: -85, y: 0 }, { x: -80, y: 50 }, { x: -75, y: 100 }, { x: -70, y: 200 }];
+    const buttonSizes = { width: 120, height: 35 }
+    const buttonLocs: Coord[] = [{ x: -125, y: 0 }, { x: -120, y: 50 }, { x: -115, y: 100 }, { x: -100, y: 200 }];
     buttonLocs.forEach(e => {
       const button = PIXI.Sprite.from("sliderButton");
       button.tint = 0x85465f;
@@ -44,11 +47,30 @@ export default class BetSlider {
       this.betSliderCon.addChild(button)
     })
   }
+  private addValueBaloon() {
+    const sizes={width:80,height:40}
+    this.valueBaloon = new PIXI.Container();
+    const baloonTexture = this.addReactange(sizes, 10, 0x045803);
+    const valueBaloonSpr = PIXI.Sprite.from(baloonTexture);
+    
+    Object.assign(valueBaloonSpr,sizes);
+
+    const valueText = new PIXI.Text(this.minBet + "", { fill: 0xffffff, fontSize: 25, fontWeight:800 });
+    valueText.anchor.set(.5);
+    valueText.position.set(sizes.width/2, 20);
+
+    this.valueBaloon.position.set(sliderSizes.width / 2 - sizes.width/2, 210);
+    this.valueBaloon.addChild(valueBaloonSpr, valueText);
+    this.betSliderCon.addChild(this.valueBaloon);
+  }
   private addBg() {
     const sliderBG = PIXI.Sprite.from("betSlider");
     sliderBG.alpha = .7;
     Object.assign(sliderBG, sliderSizes);
     this.betSliderCon.addChild(sliderBG);
+  }
+  private changeValueBaloonValue(value: number) {
+    (this.valueBaloon.children[1] as PIXI.Text).text = value + "";
   }
   private createDragAndDropForSliderButton(target: PIXI.Sprite) {
     let t: boolean = false;
@@ -61,8 +83,14 @@ export default class BetSlider {
     target.on("pointerup", e => t = false)
     target.on("pointermove", (e) => {
       if (!t) return;
-      const x = target.position.y + e.data.originalEvent.movementY * (1 / this.scale);
-      target.position.y = x > 280 ? returnValue(280) : x < 25 ? returnValue(25) : x;
+      const y = target.position.y + e.data.originalEvent.movementY * (1 / this.scale);
+      const newPosY = y > 280 ? returnValue(280) : y < 25 ? returnValue(25) : y;
+      target.position.y = newPosY;
+      this.valueBaloon.position.y = newPosY - 70;
+      const delta = 280 - 25;
+      const deltaY = newPosY - 25;
+      const bet = this.maxBet - (Math.floor((this.maxBet - this.minBet) / delta * deltaY));
+      this.changeValueBaloonValue(bet);
     });
   }
   private addSliderButton() {
@@ -72,11 +100,15 @@ export default class BetSlider {
     this.createDragAndDropForSliderButton(sliderScrollButton);
     this.betSliderCon.addChild(sliderScrollButton);
   }
-  add() {
+  add(minBet: number, maxBet: number) {
+    this.minBet = minBet;
+    this.maxBet = maxBet;
+
     this.addBg();
     this.addTireler();
     this.addSliderButton();
-    this.addButtons();
+    this.addValueBaloon();
+    //this.addButtons();
   }
   addLayer() {
     this.betSliderCon.x = W - 420;
