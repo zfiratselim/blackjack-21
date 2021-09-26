@@ -3,7 +3,6 @@ import * as PIXI from "pixi.js";
 import Table from "./table";
 import CardLayer from "./cardLayer";
 import ButtonLayer from "./buttonLayer";
-import BetSlider from "./betSlider";
 import { W, H } from "./config";
 import { Owner } from "./interface";
 
@@ -11,8 +10,7 @@ import { Owner } from "./interface";
 export default class BlackJack extends PIXI.Application {
   private Table: Table = new Table(this.stage);
   private CardLayer: CardLayer = new CardLayer(this.stage, this.renderer);
-  private ButtonLayer: ButtonLayer = new ButtonLayer(this.stage, this.renderer);
-  private BetSlider: BetSlider;
+  private ButtonLayer: ButtonLayer;
   private scale: number;
 
   constructor(s) {
@@ -23,8 +21,9 @@ export default class BlackJack extends PIXI.Application {
       backgroundColor: 0x53FF15
     })
     this.scale = s;
+    this.ButtonLayer = new ButtonLayer(this.stage, this.renderer, this.scale, "sockettt", 20, 100);
+
     this.stage.scale.set(this.scale);
-    this.BetSlider = new BetSlider(this.stage, this.renderer, this.scale);
     this.loader
       .add("mugSoftLogo", "images/mugsoft.png")
       .add("Q", "images/queen.png")
@@ -45,15 +44,6 @@ export default class BlackJack extends PIXI.Application {
       .load(() => this.startGame())
   }
 
-  sendSocketCardRequest() {
-    this.recieveCardfromSocket(Math.floor(Math.random() * 9) + 2 + "", "sinek", Owner.player1)
-  }
-  sendtoSocketStandRequest() {
-    alert("Stand")
-  }
-  recieveCardfromSocket(num: string, type: string, owner: Owner) {
-    //this.CardLayer.actionCard(num, type, owner);
-  }
   ticcker() {
     this.ticker.add(d => {
       this.CardLayer.update()
@@ -63,7 +53,6 @@ export default class BlackJack extends PIXI.Application {
     this.ticcker();
     this.Table.add();
     this.CardLayer.addLayers();
-    this.BetSlider.addLayer();
     const showCards = (owner, i, A) => {
       for (let a = 0; a < A; a++) {
         setTimeout(() => {
@@ -73,8 +62,7 @@ export default class BlackJack extends PIXI.Application {
     }
     showCards(Owner.player1, 1, 5);
     showCards(Owner.player1, 2, 5);
-    this.ButtonLayer.addButtons(1);
-    this.BetSlider.add(20, 100);
+    this.ButtonLayer.addButtons(0);
   }
 }
 

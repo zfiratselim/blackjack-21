@@ -194,6 +194,6 @@ export default class CardLayer {
       this.addNewCard(e);
       this.newCardList.splice(i, 1);
     })
-    this.action()
+    this.action();
   }
 }

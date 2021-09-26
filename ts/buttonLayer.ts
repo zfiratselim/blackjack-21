@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js";
+import BetSlider from "./betSlider";
 import { SmoothGraphics as Graphics } from "@pixi/graphics-smooth";
 import { ButtonIntFace, Coord } from "./interface";
 import { H, W } from "./config";
-
 class Button {
   private renderer: PIXI.Renderer;
   constructor(renderer) {
@@ -38,9 +38,14 @@ class Button {
 
 
 export default class ButtonLayer {
-  private stage;
-  private renderer;
-  private Button;
+  private stage: PIXI.Container;
+  private renderer: PIXI.Renderer | PIXI.AbstractRenderer;
+  private scale: number
+  private socket: WebSocket;
+  private minBet: number = 0;
+  private maxBet: number = 0;
+  private Button: Button;
+  private BetSlider: BetSlider
   private ButtonCon: PIXI.Container = new PIXI.Container();
   private buttonCoords: Coord[] = [
     { x: 60, y: H - 100 },
@@ -51,11 +56,11 @@ export default class ButtonLayer {
   private buttonInfo: { title: string, fn: () => void }[][] = [
     [
       {
-        title: "MIN: 50",
+        title: "MIN",
         fn: () => alert("min button")
       },
       {
-        title: "MAX: 200",
+        title: "MAX",
         fn: () => alert("max button")
       },
       {
@@ -69,7 +74,7 @@ export default class ButtonLayer {
     ],
     [
       {
-        title: "SPLIT: 50",
+        title: "SPLIT",
         fn: () => alert("split button")
       },
       {
@@ -86,14 +91,24 @@ export default class ButtonLayer {
       }
     ]
   ]
-  constructor(stage, renderer) {
+  constructor(stage: PIXI.Container, renderer: PIXI.Renderer | PIXI.AbstractRenderer, scale: number, socket, minBet: number, maxBet: number) {
     this.stage = stage;
     this.renderer = renderer;
+    this.scale = scale;
     this.Button = new Button(this.renderer);
-    this.stage.addChild(this.ButtonCon);
-  }
+    this.BetSlider = new BetSlider(this.stage, this.renderer, this.scale);
+    this.socket = socket;
+    this.maxBet = maxBet;
+    this.minBet = minBet;
 
-  addInteractivityForButton(button: ButtonIntFace, fn: () => void) {
+    this.stage.addChild(this.ButtonCon);
+    this.changeButtonTitle();
+  }
+  private changeButtonTitle() {
+    this.buttonInfo[0][0].title += ": " + this.maxBet;
+    this.buttonInfo[0][1].title += ": " + this.minBet;
+  }
+  private addInteractivityForButton(button: ButtonIntFace, fn: () => void) {
     button.interactive = true;
     const buttonTint = (button.children[0] as PIXI.Sprite).tint;
     button.on("pointerdown", e => {
@@ -106,7 +121,9 @@ export default class ButtonLayer {
       (button.children[0] as PIXI.Sprite).tint = buttonTint;
     })
   }
-  addButtons(type = 0) {
+  addButtons(type: number) {
+    this.BetSlider.addLayer();
+
     this.buttonCoords.forEach((e, i) => {
       const buttonInfo = this.buttonInfo[type][i];
       const button = this.Button.add(0xF35565, buttonInfo.title) as ButtonIntFace;
