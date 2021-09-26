@@ -105,8 +105,8 @@ export default class ButtonLayer {
     this.changeButtonTitle();
   }
   private changeButtonTitle() {
-    this.buttonInfo[0][0].title += ": " + this.maxBet;
-    this.buttonInfo[0][1].title += ": " + this.minBet;
+    this.buttonInfo[0][0].title += ": " + this.minBet;
+    this.buttonInfo[0][1].title += ": " + this.maxBet;
   }
   private addInteractivityForButton(button: ButtonIntFace, fn: () => void) {
     button.interactive = true;
